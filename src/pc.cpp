@@ -1,5 +1,5 @@
 #include <iostream>
-#include "pc.hpp"
+#include "headers/pc.hpp"
 
 
 program_counter::program_counter()
@@ -8,7 +8,7 @@ program_counter::program_counter()
 }
 
 
-unsigned int program_counter::get_PC() const
+ int program_counter::get_PC() const
 {
     return PC;
 }
@@ -20,7 +20,7 @@ void program_counter::increment()
 }
 
 
-void load_PC(unsigned int instr)
+void program_counter::load_PC( int instr)
 {
-    PC = instr;
+	PC  = instr;
 }

@@ -12,17 +12,14 @@ public:
     //To increment PC
     void increment();
     //To load a new value into PC
-    void load_PC(const int &new_PC);
+    void load_PC( int instr);
     // Getter for PC
-    unsigned int get_PC() const;
+    int get_PC() const;
 
-    int get_PC();
-
-    void load_PC(unsigned int loc);
 
 private:
 
-    unsigned int PC;
+    int PC;
     
 };
 

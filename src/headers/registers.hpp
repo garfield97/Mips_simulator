@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-typedef unsigned int reg;
+typedef  int reg;
 
 class registers
 {
