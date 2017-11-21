@@ -1,7 +1,7 @@
 #include <iostream>
 #include "headers/mem.hpp"
 
-#define MEM_SIZE 0x00000000
+#define MEM_SIZE 0x3000000C
 #define NULL_START 0x00000003
 #define NULL_END 0x00000004
 #define EXEC_START 0x10000000
@@ -16,21 +16,21 @@
 // Allocate block of memory and split up into sub-blocks
 memory::memory()
 {
-    mem = new [MEM_SIZE]; // Declare memory of specified size in heap, so it is dynamically allocated
+    mem = new int[MEM_SIZE]; // Declare memory of specified size in heap, so it is dynamically allocated
 
     for (int i = RW_START; i <= RW_END; i++) mem[i] = 0;//Initialise all data memory to 0
 }
 
 
-unsigned int memory::get_instruction(int location) const
+ int memory::get_instruction(int location) const
 {
-    unsigned int inst = (mem[location] << 24) + (mem[location+1] << 16) + (mem[location+2] << 8) + mem[location+3];
+     int inst = (mem[location] << 24) + (mem[location+1] << 16) + (mem[location+2] << 8) + mem[location+3];
 
     return inst;
 }
 
 
-int memory::load_word(unsigned int loc) const
+int memory::load_word( int loc) const
 {
     loc += RW_START;
     
@@ -39,7 +39,7 @@ int memory::load_word(unsigned int loc) const
 }
 
 
-int memory::load_byte(unsigned int loc) const
+int memory::load_byte( int loc) const
 {
     loc += RW_START;
 
@@ -47,7 +47,7 @@ int memory::load_byte(unsigned int loc) const
     return tmp;
 }
 
-int memory::load_hword(unsigned int loc) const
+int memory::load_hword( int loc) const
 {
     loc += RW_START;
 
