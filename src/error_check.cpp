@@ -32,4 +32,13 @@ bool division_error(unsigned short op1, unsigned int short op2) // Error code -1
 {
     if (op2 == 0) return true;
     return false;
+    
+    
 }
+
+
+bool internal_error(
+//invalid opcode
+
+
+bool io_error(
