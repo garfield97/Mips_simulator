@@ -1,17 +1,17 @@
 #include <iostream>
-
 #include "headers/mem.hpp"
 #include "headers/registers.hpp"
 #include "headers/pc.hpp"
 #include <fstream>
+#include "error_check.cpp"
 
 
 void mother(memory &mem, registers &CPUreg, program_counter &PC);
 void read_file(memory &mem, std::fstream &infile);
-void decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned int instruction);
-void i_type(memory &mem, registers &CPUreg, program_counter &PC, const  int instruction);
-void j_type(memory &mem, registers &CPUreg, program_counter &PC, const   int instruction);
-void r_type(memory &mem, registers &CPUreg, program_counter &PC, const  int instruction);
+int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned int instruction);
+void i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction);
+int j_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction);
+int r_type(registers &CPUreg, program_counter &PC, const unsigned int instruction);
 
 
 int main(int argc, char **argv)
@@ -65,24 +65,24 @@ void read_file(memory &mem, std::fstream &infile)
         count++;
     }
 }
-void decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned int instruction)
+int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned int instruction)
 {
     unsigned short opcode = instruction >> 25;
 
     switch (opcode)
     {
-        case 0b000000: r_type(mem, CPUreg, PC, instruction); break;// R - Type
-        case 0b000010: j_type(mem, CPUreg, PC, instruction); break;// J - Type
-        case 0b000011: r_type(mem, CPUreg, PC, instruction); break;// J - Type
+        case 0b000000: return (r_type(CPUreg, PC, instruction)); break;// R - Type
+        case 0b000010: return (j_type(mem, CPUreg, PC, instruction)); break;// J - Type
+        case 0b000011: return (j_type(mem, CPUreg, PC, instruction)); break;// J - Type
         default: i_type(mem, CPUreg, PC, instruction); break;// I - Type
     }
 }
-void i_type(memory &mem, registers &CPUreg, program_counter &PC, const  int instruction)
+void i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
 {
-    const int rs = (instruction >> 21) & 0b11111;
-    const int rt = (instruction >> 16) & 0b11111;
-    const int IMM = instruction & 0XFF;
-    const int opcode = instruction >> 26;
+    const short rs = (instruction >> 21) & 0b11111;
+    const short rt = (instruction >> 16) & 0b11111;
+    const short IMM = instruction & 0XFF;
+    const short opcode = instruction >> 26;
 
     switch (opcode)
     {
@@ -103,10 +103,10 @@ void i_type(memory &mem, registers &CPUreg, program_counter &PC, const  int inst
         default: mem.store_word(CPUreg.reg[rs], CPUreg.reg[rt]); break;
     }
 }
-void j_type(memory &mem, registers &CPUreg, program_counter &PC, const   int instruction)
+int j_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
 {
-    const int address = instruction & 0x3FFFFC;
-    const short type = instruction >> 25;
+    const unsigned int address = instruction & 0x3FFFFC;
+    const unsigned short type = instruction >> 25;
 
     switch (type)
     {
@@ -119,24 +119,26 @@ void j_type(memory &mem, registers &CPUreg, program_counter &PC, const   int ins
         	break;
     }
 }
-void r_type(memory &mem, registers &CPUreg, program_counter &PC, const  int instruction)
+int r_type(registers &CPUreg, program_counter &PC, const unsigned int instruction)
 {
-    const int rs = (instruction >> 21) & 0b11111;
-    const int rt = (instruction >> 16) & 0b11111;
-    const int rd = (instruction >> 11) & 0b11111;
-    const int shift_size = (instruction >> 6) & 0b11111;
-    const int funct = instruction & 0b111111;
+    const unsigned short rs = (instruction >> 21) & 0b11111;
+    const unsigned short rt = (instruction >> 16) & 0b11111;
+    const unsigned short rd = (instruction >> 11) & 0b11111;
+    const unsigned short shift_size = (instruction >> 6) & 0b11111;
+    const unsigned short funct = instruction & 0b111111;
+
+    if (rt == 0) return -11;
 
     switch (funct)
     {
-        case 0x20    : CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt];  break;//signed addition
-        case 0x21    : CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; break; //  addition
+        case 0x20    : if (!addition_exception(rs, rt)) {return -10;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt];  break;//signed addition
+        case 0x21    : if (!addition_exception(rs, rt)) {return -10;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; break; //  addition
         case 0x22    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; break;  // signed subtraction
         case 0x23    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; break;  //  subtraction
         case 0x18    : // signed multiplication
         case 0x19    :    //  multiplcation
-        case 0x1a    :   // signed division
-        case 0x1b    :     //  division
+        case 0x1a    : if(!division_error(rs, rt)) {return -10;})  // signed division
+        case 0x1b    : if(!division_error(rs, rt)) {return -10;}    //  division
         case 0x10    : // move from HI
         case 0x12    : // Move from LO
         case 0x24    : CPUreg.reg[rd] = CPUreg.reg[rs] & CPUreg.reg[rt];  break;// bitwise AND
@@ -157,7 +159,8 @@ void r_type(memory &mem, registers &CPUreg, program_counter &PC, const  int inst
         case 0x09    : CPUreg.reg[31] = PC.get_PC() + 4;
                        PC.load_PC(CPUreg.reg[rs]); break;
         case 0x0c    : /*0c goes here*/ ;  break;
-
-
+        default: return -12; // Invalid instruction was attempted
     }
+
+    return 0; // Return 0 if no error occured
 }
