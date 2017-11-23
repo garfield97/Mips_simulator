@@ -126,6 +126,8 @@ int r_type(registers &CPUreg, program_counter &PC, const unsigned int instructio
     const unsigned short rd = (instruction >> 11) & 0b11111;
     const unsigned short shift_size = (instruction >> 6) & 0b11111;
     const unsigned short funct = instruction & 0b111111;
+    
+    unsigned short int temp;
 
     if (rt == 0) return -11;
 
@@ -166,10 +168,12 @@ int r_type(registers &CPUreg, program_counter &PC, const unsigned int instructio
             case 0x21    : CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; break;// unsigned addition
             case 0x22    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; break; // signed subtraction
             case 0x23    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; break; // unsigned subtraction
-            case 0x18    : CPUreg.hi=(CPUreg.reg[rs]*CPUreg.reg[rt])>>32;     //signed multiplication
-                           CPUreg.lo=(CPUreg.reg[rs]*CPUreg.reg[rt])<<32)>>32; break;
-            case 0x19    : CPUreg.hi=(CPUreg.reg[rs]*CPUreg.reg[rt])>>32;       //unsigned multiplication
-                           CPUreg.lo=(CPUreg.reg[rs]*CPUreg.reg[rt])<<32)>>32; break;
+            case 0x18    : temp=(CPUreg.reg[rs]*CPUreg.reg[rt]);     //signed multiplication
+                           CPUreg.hi=(temp>>32); 
+                           CPUreg.lo=(temp<<32)>>32; break;
+            case 0x19    : temp=(CPUreg.reg[rs]*CPUreg.reg[rt]);       //unsigned multiplication
+                           CPUreg.hi=temp>>32;       
+                           CPUreg.lo=(temp<<32)>>32; break;
             case 0x1a    : CPUreg.lo=CPUreg.reg[rs]/CPUreg.reg[rt];             //signed division
                            CPUreg.hi=CPUreg.reg[rs]%CPUreg.reg[rt]; break;
             case 0x1b    : CPUreg.lo=CPUreg.reg[rs]/CPUreg.reg[rt];      //unsigned division
