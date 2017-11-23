@@ -16,7 +16,7 @@
 // Allocate block of memory and split up into sub-blocks
 memory::memory()
 {
-    mem = new int[MEM_SIZE]; // Declare memory of specified size in heap, so it is dynamically allocated
+    mem = new unsigned int[MEM_SIZE]; // Declare memory of specified size in heap, so it is dynamically allocated
 
     for (int i = RW_START; i <= RW_END; i++) mem[i] = 0;//Initialise all data memory to 0
 }

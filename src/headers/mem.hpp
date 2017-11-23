@@ -8,7 +8,7 @@ class memory
     public:
 
     memory();
-     int get_instruction(int location) const;
+    int get_instruction(int location) const;
     int load_word( int loc) const;
     int load_byte( int loc) const;
     int load_hword( int loc) const;
@@ -18,7 +18,7 @@ class memory
 
     private: 
 
-    int *mem;
+    unsigned int *mem;
 };
 
 
