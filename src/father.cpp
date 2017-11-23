@@ -9,7 +9,7 @@
 void mother(memory &mem, registers &CPUreg, program_counter &PC);
 void read_file(memory &mem, std::fstream &infile);
 int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned int instruction);
-void i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction);
+int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction);
 int j_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction);
 int r_type(registers &CPUreg, program_counter &PC, const unsigned int instruction);
 
@@ -78,12 +78,14 @@ int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned in
     }
 }
 
-void i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
+int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
 {
     const short rs = (instruction >> 21) & 0b11111;
     const short rt = (instruction >> 16) & 0b11111;
     const short IMM = instruction & 0XFF;
     const short opcode = instruction >> 26;
+
+    if (rs > 31 || rt > 31) return -11;
 
     switch (opcode)
     {
@@ -96,12 +98,13 @@ void i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned 
         case 0x0C: CPUreg.reg[rt] = CPUreg.reg[rs] & IMM; break;
         case 0x0D: CPUreg.reg[rt] = CPUreg.reg[rs] | IMM; break;
         case 0x0F: CPUreg.reg[rt] = IMM << 16; break;
-        case 0x23: CPUreg.reg[rt] = mem.load_word(CPUreg.reg[rs]); break;
-        case 0x24: CPUreg.reg[rt] = (unsigned)(mem.load_byte(CPUreg.reg[rs])); break;
-        case 0x25: CPUreg.reg[rt] = (unsigned)(mem.load_hword(CPUreg.reg[rs])); break;
-        case 0x28: mem.store_byte(CPUreg.reg[rs], CPUreg.reg[rt]); break;
-        case 0x29: mem.store_hword(CPUreg.reg[rs], CPUreg.reg[rt]); break;
-        default: mem.store_word(CPUreg.reg[rs], CPUreg.reg[rt]); break;
+        case 0x23: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = mem.load_word(CPUreg.reg[rs]); break;
+        case 0x24: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_byte(CPUreg.reg[rs])); break;
+        case 0x25: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_hword(CPUreg.reg[rs])); break;
+        case 0x28: if (RW_error(CPUreg.reg[rs])) {return -11;}mem.store_byte(CPUreg.reg[rs], CPUreg.reg[rt]); break;
+        case 0x29: if (RW_error(CPUreg.reg[rs])) {return -11;}mem.store_hword(CPUreg.reg[rs], CPUreg.reg[rt]); break;
+        case 0x30: if (RW_error(CPUreg.reg[rs])) {return -11;}mem.store_word(CPUreg.reg[rs], CPUreg.reg[rt]); break;
+        default: return -12;
     }
 }
 int j_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
@@ -133,17 +136,18 @@ int r_type(registers &CPUreg, program_counter &PC, const unsigned int instructio
     const unsigned short funct = instruction & 0b111111;
 
     if (rt == 0) return -11;
+    if (rs > 31 || rt > 31) return -11;
 
     switch (funct)
     {
-        case 0x20    : if (!addition_exception(rs, rt)) {return -10;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt];  break;//signed addition
-        case 0x21    : if (!addition_exception(rs, rt)) {return -10;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; break; //  addition
+        case 0x20    : if (addition_exception(rs, rt)) {return -10;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt];  break;//signed addition
+        case 0x21    : if (addition_exception(rs, rt)) {return -10;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; break; //  addition
         case 0x22    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; break;  // signed subtraction
         case 0x23    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; break;  //  subtraction
         case 0x18    : // signed multiplication
         case 0x19    :    //  multiplcation
-        case 0x1a    : if(!division_error(rs, rt)) {return -10;}  // signed division
-        case 0x1b    : if(!division_error(rs, rt)) {return -10;}    //  division
+        case 0x1a    : if(division_error(rs, rt)) {return -10;}  // signed division
+        case 0x1b    : if(division_error(rs, rt)) {return -10;}    //  division
         case 0x10    : // move from HI
         case 0x12    : // Move from LO
         case 0x24    : CPUreg.reg[rd] = CPUreg.reg[rs] & CPUreg.reg[rt];  break;// bitwise AND
