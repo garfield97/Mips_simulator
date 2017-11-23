@@ -71,6 +71,8 @@ int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned in
 {
     unsigned short opcode = instruction >> 25;
 
+    if (invalid_opcode(opcode)) return -12;
+
     switch (opcode)
     {
         case 0b000000: return (r_type(CPUreg, PC, instruction)); break;// R - Type
@@ -78,6 +80,8 @@ int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned in
         case 0b000011: return (j_type(mem, CPUreg, PC, instruction)); break;// J - Type
         default: i_type(mem, CPUreg, PC, instruction); break;// I - Type
     }
+
+    return 0;
 }
 
 int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
