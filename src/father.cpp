@@ -139,7 +139,7 @@ int r_type(registers &CPUreg, program_counter &PC, const unsigned int instructio
     const unsigned short shift_size = (instruction >> 6) & 0b11111;
     const unsigned short funct = instruction & 0b111111;
     
-    long temp;
+    long long temp;
 
     if (rt == 0) return -11;
     if (rs > 31 || rt > 31) return -11;
