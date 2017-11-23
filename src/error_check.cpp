@@ -2,6 +2,7 @@
 
 bool RW_error(int access_addr) // Error code -11
 {
+    access_addr /= 4;
     if (access_addr < 0x8000000 || access_addr >= 0x9000000) return true;
     return false;
 }
@@ -9,6 +10,7 @@ bool RW_error(int access_addr) // Error code -11
 
 bool mem_range_error(int access_addr) // Error code -11
 {
+    access_addr /= 4;
     if (access_addr >= 0x40000000) return true;
     return false;
 }
@@ -16,6 +18,7 @@ bool mem_range_error(int access_addr) // Error code -11
 
 bool invalid_instruction(int access_addr) // Error code -12
 {
+    access_addr /= 4;
     if (access_addr < 0x9000000 || access_addr >= 0x4400000) return true;
     return false;
 }
