@@ -35,9 +35,6 @@ bool division_error(unsigned short op1, unsigned int short op2) // Error code -1
 {
     if (op2 == 0) return true;
     return false;
-<<<<<<< HEAD
-    
-    
 }
 
 
@@ -77,6 +74,3 @@ bool invalid_opcode(unsigned int opcode){
 
 
 //bool io_error(
-=======
-}
->>>>>>> 25c17befab5a6723399a847e6c33456852c6fa49
