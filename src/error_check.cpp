@@ -20,6 +20,7 @@ bool invalid_instruction(int access_addr)
     return false;
 }
 
+
 bool addition_exception(unsigned short op1, unsigned int short op2)
 {
     if (op1 > INT_MAX - op2) return true;
