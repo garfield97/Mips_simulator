@@ -47,6 +47,7 @@ void mother(memory &mem, registers &CPUreg, program_counter &PC)
 
     while (PC.get_PC() != 0);
 }
+
 void read_file(memory &mem, std::fstream &infile)
 {
     char c;
@@ -65,6 +66,7 @@ void read_file(memory &mem, std::fstream &infile)
         count++;
     }
 }
+
 int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned int instruction)
 {
     unsigned short opcode = instruction >> 25;
