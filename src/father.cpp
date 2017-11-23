@@ -129,34 +129,38 @@ void r_type(memory &mem, registers &CPUreg, program_counter &PC, const  int inst
 
     switch (funct)
     {
-        case 0x20    : CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt];  break;//signed addition
-        case 0x21    : CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; break; //  addition
-        case 0x22    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; break;  // signed subtraction
-        case 0x23    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; break;  //  subtraction
-        case 0x18    : // signed multiplication
-        case 0x19    :    //  multiplcation
-        case 0x1a    :   // signed division
-        case 0x1b    :     //  division
-        case 0x10    : // move from HI
-        case 0x12    : // Move from LO
-        case 0x24    : CPUreg.reg[rd] = CPUreg.reg[rs] & CPUreg.reg[rt];  break;// bitwise AND
-        case 0x25    : CPUreg.reg[rd] = CPUreg.reg[rs] | CPUreg.reg[rt];  break;//bitwise or
-        case 0x26    : CPUreg.reg[rd] = CPUreg.reg[rs] ^ CPUreg.reg[rt]; break; // bitwise xor
-        case 0x27    : CPUreg.reg[rd] = ~(CPUreg.reg[rs] | CPUreg.reg[rt]); break; //bitwise NOR
-        case 0x2a    : if(CPUreg.reg[rs]<CPUreg.reg[rt]) CPUreg.reg[rd]=1;
-                       else CPUreg.reg[rd]=0; break;
-        case 0x2b    : if(CPUreg.reg[rs]<CPUreg.reg[rt]) CPUreg.reg[rd]=1;
-                       else CPUreg.reg[rd]=0; break;
-        case 0x00    : CPUreg.reg[rd] = CPUreg.reg[rt]<<shift_size; break;// shift size is the shift amount
-        case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rs]<<CPUreg.reg[rt]; break;
-        case 0x02    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; break;
-        case 0x06    : CPUreg.reg[rd] = CPUreg.reg[rs]>>CPUreg.reg[rt]; break;
-        case 0x03    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; break; //arithmetic shift
-        case 0x07    : CPUreg.reg[rd] = CPUreg.reg[rs]>>CPUreg.reg[rt]; break; // arithmetic shift with the amount
-        case 0x08    : PC.load_PC(CPUreg.reg[rs]); break;
-        case 0x09    : CPUreg.reg[31] = PC.get_PC() + 4;
-                       PC.load_PC(CPUreg.reg[rs]); break;
-        case 0x0c    : /*0c goes here*/ ;  break;
+    		case 0x20    : CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; break;//signed addition
+            case 0x21    : CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; break;// unsigned addition
+            case 0x22    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; break; // signed subtraction
+            case 0x23    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; break; // unsigned subtraction
+            case 0x18    : CPUreg.hi=(CPUreg.reg[rs]*CPUreg.reg[rt])>>32;     //signed multiplication
+                           CPUreg.lo=(CPUreg.reg[rs]*CPUreg.reg[rt])<<32)>>32; break;
+            case 0x19    : CPUreg.hi=(CPUreg.reg[rs]*CPUreg.reg[rt])>>32;       //unsigned multiplication
+                           CPUreg.lo=(CPUreg.reg[rs]*CPUreg.reg[rt])<<32)>>32; break;
+            case 0x1a    : CPUreg.lo=CPUreg.reg[rs]/CPUreg.reg[rt];             //signed division
+                           CPUreg.hi=CPUreg.reg[rs]%CPUreg.reg[rt]; break;
+            case 0x1b    : CPUreg.lo=CPUreg.reg[rs]/CPUreg.reg[rt];      //unsigned division
+                           CPUreg.hi=CPUreg.reg[rs]%CPUreg.reg[rt];  break;
+            case 0x10    : CPUreg.reg[rd]=CPUreg.hi; break;// move from hi
+            case 0x12    : CPUreg.reg[rd]=CPUreg.lo; break;// move fromlo
+            case 0x24    : CPUreg.reg[rd] = CPUreg.reg[rs] & CPUreg.reg[rt]; break;// bitwise AND
+            case 0x25    : CPUreg.reg[rd] = CPUreg.reg[rs] | CPUreg.reg[rt]; break;//bitwise or
+            case 0x26    : CPUreg.reg[rd] = CPUreg.reg[rs] ^ CPUreg.reg[rt]; break;// bitwise xor
+            case 0x27    : CPUreg.reg[rd] = ~(CPUreg.reg[rs] | CPUreg.reg[rt]);break; //bitwise NOR
+            case 0x2a    : if(CPUreg.reg[rs]<CPUreg.reg[rt]) CPUreg.reg[rd]=1;
+                           else CPUreg.reg[rd]=0;        break;
+            case 0x2b    : if(CPUreg.reg[rs]<CPUreg.reg[rt]) CPUreg.reg[rd]=1;
+                           else CPUreg.reg[rd]=0;break;
+            case 0x00    : CPUreg.reg[rd] = CPUreg.reg[rt]<<shift_size; break;// shift size is the shift amount
+            case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rs]<<CPUreg.reg[rt]; break;
+            case 0x02    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; break;
+            case 0x06    : CPUreg.reg[rd] = CPUreg.reg[rs]>>CPUreg.reg[rt]; break;
+            case 0x03    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; break; //arithmetic shift
+            case 0x07    : CPUreg.reg[rd] = CPUreg.reg[rs]>>CPUreg.reg[rt]; break;// arithmetic shift with the amount
+            case 0x08    : PC.load_PC(CPUreg.reg[rs]);break;
+            default      : CPUreg.reg[31] = PC.increment();
+                           PC.load_PC(CPUreg.reg[rs]); break;
+    //case 0x0c    :  // system call for OS services
 
 
     }
