@@ -75,10 +75,10 @@ int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned in
 
     switch (opcode)
     {
-        case 0b000000: return (r_type(CPUreg, PC, instruction)); break;// R - Type
-        case 0b000010: return (j_type(mem, CPUreg, PC, instruction)); break;// J - Type
-        case 0b000011: return (j_type(mem, CPUreg, PC, instruction)); break;// J - Type
-        default: i_type(mem, CPUreg, PC, instruction); break;// I - Type
+        case 0b000000: return (r_type(CPUreg, PC, instruction));// R - Type
+        case 0b000010: return (j_type(mem, CPUreg, PC, instruction));// J - Type
+        case 0b000011: return (j_type(mem, CPUreg, PC, instruction));// J - Type
+        default: return (i_type(mem, CPUreg, PC, instruction));// I - Type
     }
 }
 
