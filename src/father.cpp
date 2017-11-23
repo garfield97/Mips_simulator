@@ -80,8 +80,6 @@ int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned in
         case 0b000011: return (j_type(mem, CPUreg, PC, instruction)); break;// J - Type
         default: i_type(mem, CPUreg, PC, instruction); break;// I - Type
     }
-
-    return 0;
 }
 
 int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
