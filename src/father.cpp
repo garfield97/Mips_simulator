@@ -93,8 +93,8 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
 
     switch (opcode)
     {
-        case 0x04: if (CPUreg.reg[rs] == CPUreg.reg[rt]); break; //BEQ ADD PC LOAD THING HERE
-        case 0x05: if (CPUreg.reg[rs] != CPUreg.reg[rt]); break; //BNE AND HERE
+        case 0x04: if (mem_range_error(IMM)) return -11; if (CPUreg.reg[rs] == CPUreg.reg[rt]) PC.load_PC(IMM); break; //BEQ ADD PC LOAD THING HERE
+        case 0x05: if (mem_range_error(IMM)) return -11; if (CPUreg.reg[rs] != CPUreg.reg[rt]) PC.load_PC(IMM); break; //BNE AND HERE
         case 0x08: CPUreg.reg[rt] = CPUreg.reg[rs] + IMM; break;
         case 0x09: CPUreg.reg[rt] = (unsigned)(CPUreg.reg[rs]) + (unsigned)(IMM); break;
         case 0x0A: if (CPUreg.reg[rs] < IMM) CPUreg.reg[rt] = 1; break;
