@@ -1,7 +1,7 @@
 #include <iostream>
 #include "headers/mem.hpp"
 
-#define MEM_SIZE 0x3000000D
+#define MEM_SIZE 0x40000000
 #define NULL_START 0x00000000
 #define NULL_END 0x00000000
 #define EXEC_START 0x4000000
