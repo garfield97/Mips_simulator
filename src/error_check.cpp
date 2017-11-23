@@ -37,8 +37,39 @@ bool division_error(unsigned short op1, unsigned int short op2) // Error code -1
 }
 
 
-bool internal_error(
+bool invalid_opcode(unsigned int opcode){
+
+    switch(opcode){
+
+        case 0x20: return false; break;
+        case 0x24: return false; break;
+        case 0x2b: return false; break;
+        case 0x29: return false; break;
+        case 0x28: return false; break;
+        case 0x0f: return false; break;
+        case 0x0d: return false; break;
+        case 0x0c: return false; break;
+        case 0x0e: return false; break;
+        case 0x0a: return false; break;
+        case 0x0b: return false; break;
+        case 0x04: return false; break;
+        case 0x05: return false; break;
+        case 0x08: return false; break;
+        case 0x09: return false; break;
+        case 0x23: return false; break;
+        case 0x21: return false; break;
+        case 0x25: return false; break;
+        case 0x02: return false; break;
+        case 0x03: return false; break;
+        default  : return true;  break;
+    }
+}
+
+
+//error codes
+
+//bool internal_error(
 //invalid opcode
 
 
-bool io_error(
+//bool io_error(
