@@ -165,8 +165,8 @@ int r_type(registers &CPUreg, program_counter &PC, const unsigned int instructio
 
     switch (funct)
     {
-    		case 0x20    : if (addition_exception(rs, rt)) CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; break;//signed addition
-            case 0x21    : if (addition_exception(rs, rt)) CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; break;// unsigned addition
+    		case 0x20    : if (addition_exception(rs, rt)) return -10; CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; break;//signed addition
+            case 0x21    : if (addition_exception(rs, rt)) return -10; CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; break;// unsigned addition
             case 0x22    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; break; // signed subtraction
             case 0x23    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; break; // unsigned subtraction
             case 0x18    : temp=(CPUreg.reg[rs]*CPUreg.reg[rt]);     //signed multiplication
