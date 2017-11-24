@@ -1,2 +1,2 @@
 bin/simulator : src/*.cpp src/headers/*.hpp
-	g++ src/*.cpp -o bin/simulator
+	g++ src/*.cpp -Wall -o bin/simulator
