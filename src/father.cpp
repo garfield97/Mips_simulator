@@ -19,6 +19,7 @@ int main(int argc, char **argv)
     memory mem;
     registers CPUreg;
     program_counter PC;
+    int result = 0;
 
     std::string filename = argv[1];
 
@@ -26,28 +27,27 @@ int main(int argc, char **argv)
 
     infile.open(filename.c_str());
 
-    read_file(mem, infile);
+    if (read_file(mem, infile) == -12) ; //If = -12 then binary too large to store in instruction memory
 
-    mother(mem, CPUreg, PC);
-    
+    do
+    {
+        result = mother(mem, CPUreg, PC);
+        PC.increment();
+    }
+
+    while (result == 0); // Continue execution so long as no errors/ exceptions occur
 
     return 0;
 }
 
+
 int mother(memory &mem, registers &CPUreg, program_counter &PC)
 {
-    do
-    {
      int instruction = mem.get_instruction(PC.get_PC()); // Retrieve instruction from memory
 
-    decode(mem, CPUreg, PC, instruction); // Decode and execute
-
-
-    PC.increment();
-    }
-
-    while (PC.get_PC() != 0);
+    return (decode(mem, CPUreg, PC, instruction)); // Decode and execute
 }
+
 
 int read_file(memory &mem, std::fstream &infile)
 {
@@ -70,6 +70,7 @@ int read_file(memory &mem, std::fstream &infile)
     return 0;
 }
 
+
 int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned int instruction)
 {
     unsigned short opcode = instruction >> 25;
@@ -84,6 +85,7 @@ int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned in
         default: return (i_type(mem, CPUreg, PC, instruction));// I - Type
     }
 }
+
 
 int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
 {
@@ -114,6 +116,8 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
         default: return -12;
     }
 }
+
+
 int j_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
 {
     const unsigned int address = instruction & 0x3FFFFC;
@@ -134,6 +138,8 @@ int j_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
 
     return 0;
 }
+
+
 int r_type(registers &CPUreg, program_counter &PC, const unsigned int instruction)
 {
     const unsigned short rs = (instruction >> 21) & 0b11111;
