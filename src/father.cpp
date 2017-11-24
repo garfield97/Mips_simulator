@@ -195,7 +195,7 @@ int r_type(registers &CPUreg, program_counter &PC, const unsigned int instructio
             case 0x06    : CPUreg.reg[rd] = CPUreg.reg[rs]>>CPUreg.reg[rt]; break;
             case 0x03    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; break; //arithmetic shift
             case 0x07    : CPUreg.reg[rd] = CPUreg.reg[rs]>>CPUreg.reg[rt]; break;// arithmetic shift with the amount
-            case 0x08    : if (invalid_instruction(CPUreg.reg[rs])) return -12; PC.load_PC(CPUreg.reg[rs]);break;
+            case 0x08    : if (invalid_instruction(CPUreg.reg[rs])) return -12; PC.load_PC(CPUreg.reg[rs]); break;
             case 0x09    : if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rs]); break;
             default: return -12; 
     }
