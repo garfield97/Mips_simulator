@@ -199,6 +199,4 @@ int r_type(registers &CPUreg, program_counter &PC, const unsigned int instructio
             case 0x09    : if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rs]); break;
             default: return -12; 
     }
-
-    return 0; // Return 0 if no error occured
 }
