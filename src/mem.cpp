@@ -1,4 +1,3 @@
-#include <iostream>
 #include "headers/mem.hpp"
 #include <bitset>
 
