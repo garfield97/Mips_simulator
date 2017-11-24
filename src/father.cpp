@@ -6,8 +6,8 @@
 #include "error_check.cpp"
 
 
-void mother(memory &mem, registers &CPUreg, program_counter &PC);
-void read_file(memory &mem, std::fstream &infile);
+int mother(memory &mem, registers &CPUreg, program_counter &PC);
+int read_file(memory &mem, std::fstream &infile);
 int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned int instruction);
 int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction);
 int j_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction);
@@ -29,11 +29,12 @@ int main(int argc, char **argv)
     read_file(mem, infile);
 
     mother(mem, CPUreg, PC);
+    
 
     return 0;
 }
 
-void mother(memory &mem, registers &CPUreg, program_counter &PC)
+int mother(memory &mem, registers &CPUreg, program_counter &PC)
 {
     do
     {
@@ -48,7 +49,7 @@ void mother(memory &mem, registers &CPUreg, program_counter &PC)
     while (PC.get_PC() != 0);
 }
 
-void read_file(memory &mem, std::fstream &infile)
+int read_file(memory &mem, std::fstream &infile)
 {
     char c;
     int t = 0;
@@ -61,10 +62,12 @@ void read_file(memory &mem, std::fstream &infile)
             infile.get(c);
             if (c == '1') t += (1 << (7-i));
         }
+        if (invalid_instruction(count)) return -12;
         mem.store_byte(count, t);
         t = 0;
         count++;
     }
+    return 0;
 }
 
 int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned int instruction)
