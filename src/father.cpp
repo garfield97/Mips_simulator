@@ -39,11 +39,11 @@ int main(int argc, char **argv)
 
     switch (result)
     {
-        case -1: // Program completed successfully
-        case -12: // Invalid instruction
-        case -11: // Memory exception
-        case -10: // Arithmetic exception
-        default: // Any other errors?
+        case -1: std::cout<<"Schmei"<<std::endl; break;// Program completed successfully
+        case -12: std::cout<<"Schmei"<<std::endl; break;// Invalid instruction
+        case -11: std::cout<<"Schmei"<<std::endl; break;// Memory exception
+        case -10: std::cout<<"Schmei"<<std::endl; break;// Arithmetic exception
+        default: std::cout<<"Schmei"<<std::endl; break;// Any other errors?
     }
 
 
