@@ -63,7 +63,7 @@ bool invalid_opcode(unsigned int opcode){
         case 0x25: return false; break;
         case 0x02: return false; break;
         case 0x03: return false; break;
-        default  : return true;  break;
+        default  : return true;
     }
 }
 
