@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 
     infile.open(filename.c_str());
 
-    if (read_file(mem, infile) == -12) ; //If = -12 then binary too large to store in instruction memory
+    if (read_file(mem, infile) == -11) ; //If = -11 then binary too large to store in instruction memory
 
     do
     {
@@ -37,7 +37,14 @@ int main(int argc, char **argv)
 
     while (result == 0); // Continue execution so long as no errors/ exceptions occur
 
-    //Deal with error
+    switch (result)
+    {
+        case -1: // Program completed successfully
+        case -12: // Invalid instruction
+        case -11: // Memory exception
+        case -10: // Arithmetic exception
+        default: // Any other errors?
+    }
 
 
     return 0;
@@ -113,10 +120,10 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
         case 0x23: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = mem.load_word(CPUreg.reg[rs]); break;
         case 0x24: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_byte(CPUreg.reg[rs])); break;
         case 0x25: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_hword(CPUreg.reg[rs])); break;
-        case 0x28: if (RW_error(CPUreg.reg[rs])) {return -11;}mem.store_byte(CPUreg.reg[rs], CPUreg.reg[rt]); break;
-        case 0x29: if (RW_error(CPUreg.reg[rs])) {return -11;}mem.store_hword(CPUreg.reg[rs], CPUreg.reg[rt]); break;
-        case 0x30: if (RW_error(CPUreg.reg[rs])) {return -11;}mem.store_word(CPUreg.reg[rs], CPUreg.reg[rt]); break;
-        default: return -12;
+        case 0x28: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(CPUreg.reg[rs])) return -1; mem.store_byte(CPUreg.reg[rs], CPUreg.reg[rt]); break;
+        case 0x29: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(CPUreg.reg[rs])) return -1; mem.store_hword(CPUreg.reg[rs], CPUreg.reg[rt]); break;
+        case 0x30: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(CPUreg.reg[rs])) return -1; mem.store_word(CPUreg.reg[rs], CPUreg.reg[rt]); break;
+        default: return -12; 
     }
 }
 
@@ -190,7 +197,7 @@ int r_type(registers &CPUreg, program_counter &PC, const unsigned int instructio
             case 0x07    : CPUreg.reg[rd] = CPUreg.reg[rs]>>CPUreg.reg[rt]; break;// arithmetic shift with the amount
             case 0x08    : if (invalid_instruction(CPUreg.reg[rs]) return -12; PC.load_PC(CPUreg.reg[rs]);break;
             case 0x09    : if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rs]); break;
-            default: return -12;
+            default: return -12; 
     }
 
     return 0; // Return 0 if no error occured
