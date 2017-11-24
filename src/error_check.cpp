@@ -66,6 +66,15 @@ bool invalid_opcode(unsigned int opcode){
     }
 }
 
+bool write_to_zero(int access_addr)
+{
+    if (access_addr == 0) return -1;
+
+    access_addr /= 4;
+
+    if (access_addr < 1) return -1;
+}
+
 
 //error codes
 
