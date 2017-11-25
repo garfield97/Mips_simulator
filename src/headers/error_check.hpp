@@ -33,12 +33,12 @@ bool addition_exception(uint32_t op1, uint32_t op2) // Error code -10
 }
 
 
-bool subtraction_exception(uint32_t op1, uint32_t op2)
+/*bool subtraction_exception(uint32_t op1, uint32_t op2)
 {
     int result = op1 - op2;
 
 
-}
+}*/
 
 
 bool division_error(uint32_t op1, uint32_t op2) // Error code -10
