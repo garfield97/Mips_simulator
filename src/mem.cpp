@@ -16,49 +16,49 @@
 // Allocate block of memory and split up into sub-blocks
 memory::memory()
 {
-    mem = new unsigned int[MEM_SIZE]; // Declare memory of specified size in heap, so it is dynamically allocated
+    mem = new uint32_t[MEM_SIZE]; // Declare memory of specified size in heap, so it is dynamically allocated
 
     for (int i = RW_START; i <= RW_END; i++) mem[i] = 0;//Initialise all data memory to 0
 }
 
 
- unsigned int memory::get_instruction(int location) const
+ uint32_t memory::get_instruction(uint32_t location) const
 {
-     int inst = (mem[location] << 24) + (mem[location+1] << 16) + (mem[location+2] << 8) + mem[location+3];
+     uint32_t inst = (mem[location] << 24) + (mem[location+1] << 16) + (mem[location+2] << 8) + mem[location+3];
 
     return inst;
 }
 
 
-unsigned int memory::load_word( int loc)
+uint32_t memory::load_word(uint32_t loc)
 {
     loc += RW_START;
 
     if (loc == GET_C_START) return (get_c(loc));
     
-    int tmp = (mem[loc] << 24) + (mem[loc+1] << 16) + (mem[loc+2] << 8) + mem[loc+3];
+    uint32_t tmp = (mem[loc] << 24) + (mem[loc+1] << 16) + (mem[loc+2] << 8) + mem[loc+3];
     return tmp;
 }
 
 
-unsigned int memory::load_byte( int loc) const
+uint32_t memory::load_byte(uint32_t loc) const
 {
     loc += RW_START;
 
-    int tmp = mem[loc];
+    uint32_t tmp = mem[loc];
     return tmp;
 }
 
-unsigned int memory::load_hword( int loc) const
+uint32_t memory::load_hword(uint32_t loc) const
 {
     loc += RW_START;
 
-    int tmp = (mem[loc] << 24) + (mem[loc+1] << 16);
+    uint32_t tmp = (mem[loc] << 24) + (mem[loc+1] << 16);
     return tmp;
 }
 
 
-void memory::store_word(int loc,  const int input)
+void memory::store_word(uint32_t loc,  const int32_t input)
 {
     loc += RW_START;
 
@@ -71,7 +71,7 @@ void memory::store_word(int loc,  const int input)
 }
 
 
-void memory::store_byte(int loc, const int input)
+void memory::store_byte(uint32_t loc, const int32_t input)
 {
     loc += RW_START;
 
@@ -79,7 +79,7 @@ void memory::store_byte(int loc, const int input)
 }
 
 
-void memory::store_hword(int loc, const int input)
+void memory::store_hword(uint32_t loc, const int32_t input)
 {
     loc += RW_START;
 
@@ -88,9 +88,9 @@ void memory::store_hword(int loc, const int input)
 }
 
 
-unsigned int memory::get_c(int loc_corrected)
+uint32_t memory::get_c(int32_t loc_corrected)
 {
-    unsigned int tmp;
+    uint32_t tmp;
 
     std::cin>>tmp;
     
@@ -98,7 +98,7 @@ unsigned int memory::get_c(int loc_corrected)
 }
 
 
-void memory::put_c(int item)
+void memory::put_c(int32_t item)
 {
     std::cout<<std::bitset<32>(item)<<std::endl;
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include "headers/pc.hpp"
+#include <cinttypes>
 
 
 program_counter::program_counter()
@@ -8,7 +9,7 @@ program_counter::program_counter()
 }
 
 
- int program_counter::get_PC() const
+uint32_t program_counter::get_PC() const
 {
     return PC;
 }

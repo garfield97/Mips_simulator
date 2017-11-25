@@ -1,9 +1,8 @@
-#ifndef ERROR_CHECK_HPP
-#define ERROR_CHECK_HPP
 #include <climits>
 #include <iostream>
+#include <cinttypes>
 
-bool RW_error(int access_addr) // Error code -11
+bool RW_error(int32_t access_addr) // Error code -11
 {
     access_addr /= 4;
     if (access_addr < 0x8000000 || access_addr >= 0x9000000) return true;
@@ -11,7 +10,7 @@ bool RW_error(int access_addr) // Error code -11
 }
 
 
-bool mem_range_error(int access_addr) // Error code -11
+bool mem_range_error(int32_t access_addr) // Error code -11
 {
     access_addr /= 4;
     if (access_addr >= 0x40000000) return true;
@@ -19,7 +18,7 @@ bool mem_range_error(int access_addr) // Error code -11
 }
 
 
-bool invalid_instruction(int access_addr) // Error code -12
+bool invalid_instruction(int32_t access_addr) // Error code -12
 {
     access_addr /= 4;
     if (access_addr < 0x9000000 || access_addr >= 0x4400000) return true;
@@ -27,21 +26,29 @@ bool invalid_instruction(int access_addr) // Error code -12
 }
 
 
-bool addition_exception(unsigned short op1, unsigned int short op2) // Error code -10
+bool addition_exception(uint32_t op1, uint32_t op2) // Error code -10
 {
     if (op1 > INT_MAX - op2) return true;
     return false;
 }
 
 
-bool division_error(unsigned short op1, unsigned int short op2) // Error code -10
+bool subtraction_exception(uint32_t op1, uint32_t op2)
+{
+    int result = op1 - op2;
+
+
+}
+
+
+bool division_error(uint32_t op1, uint32_t op2) // Error code -10
 {
     if (op2 == 0) return true;
     return false;
 }
 
 
-bool invalid_opcode(unsigned int opcode){
+bool invalid_opcode(uint32_t opcode){
 
     switch(opcode){
 
@@ -69,7 +76,7 @@ bool invalid_opcode(unsigned int opcode){
     }
 }
 
-bool write_to_zero(int access_addr)
+bool write_to_zero(int32_t access_addr)
 {
     if (access_addr == 0) return true;
 
@@ -79,7 +86,7 @@ bool write_to_zero(int access_addr)
 
     return false;
 }
-#endif
+
 
 //error codes
 

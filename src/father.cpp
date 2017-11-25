@@ -4,14 +4,15 @@
 #include "headers/pc.hpp"
 #include <fstream>
 #include "headers/error_check.hpp"
+#include <cinttypes>
 
 
-int mother(memory &mem, registers &CPUreg, program_counter &PC);
-int read_file(memory &mem, std::fstream &infile);
-int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned int instruction);
-int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction);
-int j_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction);
-int r_type(registers &CPUreg, program_counter &PC, const unsigned int instruction);
+int32_t mother(memory &mem, registers &CPUreg, program_counter &PC);
+int32_t read_file(memory &mem, std::fstream &infile);
+int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const  uint32_t instruction);
+int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
+int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
+int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction);
 
 
 int main(int argc, char **argv)
@@ -51,15 +52,15 @@ int main(int argc, char **argv)
 }
 
 
-int mother(memory &mem, registers &CPUreg, program_counter &PC)
+int32_t mother(memory &mem, registers &CPUreg, program_counter &PC)
 {
-     int instruction = mem.get_instruction(PC.get_PC()); // Retrieve instruction from memory
+     int32_t instruction = mem.get_instruction(PC.get_PC()); // Retrieve instruction from memory
 
     return (decode(mem, CPUreg, PC, instruction)); // Decode and execute
 }
 
 
-int read_file(memory &mem, std::fstream &infile)
+int32_t read_file(memory &mem, std::fstream &infile)
 {
     char c;
     int t = 0;
@@ -81,9 +82,9 @@ int read_file(memory &mem, std::fstream &infile)
 }
 
 
-int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned int instruction)
+int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_t instruction)
 {
-    unsigned short opcode = instruction >> 25;
+    uint32_t opcode = instruction >> 25;
 
     if (invalid_opcode(opcode)) return -12;
 
@@ -97,7 +98,7 @@ int decode(memory &mem, registers &CPUreg,program_counter &PC, const unsigned in
 }
 
 
-int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
+int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
 {
     const short rs = (instruction >> 21) & 0b11111;
     const short rt = (instruction >> 16) & 0b11111;
@@ -128,9 +129,9 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
 }
 
 
-int j_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
+int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction)
 {
-    const unsigned int address = instruction & 0x3FFFFC;
+    const uint32_t address = instruction & 0x3FFFFC;
     const unsigned short type = instruction >> 25;
 
     if (mem_range_error(address)) return -11;
@@ -150,7 +151,7 @@ int j_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
 }
 
 
-int r_type(registers &CPUreg, program_counter &PC, const unsigned int instruction)
+int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction)
 {
     const unsigned short rs = (instruction >> 21) & 0b11111;
     const unsigned short rt = (instruction >> 16) & 0b11111;
