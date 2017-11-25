@@ -92,7 +92,7 @@ uint32_t memory::get_c(uint32_t loc_corrected)
 {
     uint32_t tmp;
 
-    scanf("%u", tmp);
+    scanf("%" SCNd32, &tmp);
     
     return tmp;
 }
