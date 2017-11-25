@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 
     infile.open(filename.c_str());
 
-    if (read_file(mem, infile) == -11) ; //If = -11 then binary too large to store in instruction memory
+    if (read_file(mem, infile) == -11) std::cout<<"File too large to read"<<std::endl;; //If = -11 then binary too large to store in instruction memory
 
     do
     {
