@@ -1,12 +1,9 @@
 #include <iostream>
 #include "headers/pc.hpp"
-#include <cinttypes>
 
 
 program_counter::program_counter()
-{
-    PC = 0;
-}
+: PC(0) {}
 
 
 uint32_t program_counter::get_PC() const
@@ -21,7 +18,7 @@ void program_counter::increment()
 }
 
 
-void program_counter::load_PC( int instr)
+void program_counter::load_PC(uint32_t instr)
 {
 	PC  = instr;
 }
