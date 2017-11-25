@@ -16,7 +16,7 @@
 // Allocate block of memory and split up into sub-blocks
 memory::memory()
 {
-    mem = new uint32_t[MEM_SIZE]; // Declare memory of specified size in heap, so it is dynamically allocated
+    mem = new uint32_t [MEM_SIZE]; // Declare memory of specified size in heap, so it is dynamically allocated
 
     for (int i = RW_START; i <= RW_END; i++) mem[i] = 0;//Initialise all data memory to 0
 }
@@ -88,11 +88,11 @@ void memory::store_hword(uint32_t loc, const int32_t input)
 }
 
 
-uint32_t memory::get_c(int32_t loc_corrected)
+uint32_t memory::get_c(uint32_t loc_corrected)
 {
     uint32_t tmp;
 
-    std::cin>>tmp;
+    scanf("%u", tmp);
     
     return tmp;
 }
