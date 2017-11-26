@@ -10,7 +10,7 @@ class memory
 
     memory();
     uint32_t get_instruction(uint32_t location) const;
-    void load_instruction(uint32_t loc, uint32_t inst);
+    void store_instruction(uint32_t loc, uint32_t inst);
     uint32_t load_word(uint32_t loc);
     uint32_t load_byte(uint32_t loc) const;
     uint32_t load_hword(uint32_t loc) const;

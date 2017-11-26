@@ -5,6 +5,7 @@
 #include <fstream>
 #include "headers/error_check.hpp"
 #include <cinttypes>
+#include <cstdio>
 
 
 int32_t mother(memory &mem, registers &CPUreg, program_counter &PC);
@@ -75,14 +76,17 @@ int32_t read_file(memory &mem, std::fstream &infile)
 
     while (!(infile.eof()))
     {
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 33; i++)
         {
             infile.get(c);
-            if (c == '1') t += (1 << (7-i));
+            std::cout<<std::bitset<32>(t)<<std::endl;
+            fflush(stdin);
+            getchar();
+            if (c == '1') t += (1 << (31-i));
         }
         if (invalid_instruction(count)) return -12;
         std::cout<<t<<std::endl;
-        mem.store_byte(count, t);
+        mem.store_instruction(count, t);
         t = 0;
         count += 4;
     }

@@ -34,7 +34,7 @@ memory::memory()
 }
 
 
-void memory::load_instruction(uint32_t loc, uint32_t inst)
+void memory::store_instruction(uint32_t loc, uint32_t inst)
 {
     loc /= 4;
     loc += EXEC_START;
