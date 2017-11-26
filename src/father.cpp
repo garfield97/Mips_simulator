@@ -4,9 +4,7 @@
 #include "headers/pc.hpp"
 #include <fstream>
 #include "headers/error_check.hpp"
-#include <cstdio>
 #include <bitset>
-
 
 
 int32_t mother(memory &mem, registers &CPUreg, program_counter &PC);
@@ -37,8 +35,6 @@ int main(int argc, char **argv)
     if (read_file(mem, infile) == -12) {std::cout<<"File too large to read"<<std::endl; result = -12;} //If = -11 then binary too large to store in instruction memory
 
     infile.close();
-
-    PC.increment();
 
     while (result == 0)
     {
@@ -119,10 +115,6 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
 
     IMM = sign_extend(IMM);
 
-    std::cout<<std::bitset<5>(rs)<<" "<<std::bitset<5>(rt)<<" "<<std::bitset<32>(IMM)<<" "<<std::bitset<6>(opcode)<<std::endl;
-    fflush(stdin);
-    getchar();
-
     if (rs > 31 || rt > 31) return -11;
 
     switch (opcode)
@@ -164,8 +156,6 @@ int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32
         	PC.load_PC(address);
         	return 0;
     }
-
-    return 0;
 }
 
 
