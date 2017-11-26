@@ -30,6 +30,15 @@ memory::memory()
 }
 
 
+void memory::load_instruction(uint32_t loc, uint32_t inst)
+{
+    loc /= 4;
+    loc += EXEC_START;
+
+    mem[loc] = inst;
+}
+
+
 uint32_t memory::load_word(uint32_t loc)
 {
     loc += RW_START;

@@ -29,21 +29,21 @@ int main(int argc, char **argv)
 
     infile.open(filename.c_str());
 
-    if (!infile.is_open()) std::cout<<"Invalid filename"<<std::endl; return 0;
+    if (!infile.is_open()) {std::cout<<"Invalid filename"<<std::endl; return 0;}
 
-    if (read_file(mem, infile) == -11) std::cout<<"File too large to read"<<std::endl;; //If = -11 then binary too large to store in instruction memory
+    if (read_file(mem, infile) == -11) {std::cout<<"File too large to read"<<std::endl; result = -11;} //If = -11 then binary too large to store in instruction memory
 
-    PC.load_PC(4);
+    infile.close();
 
-    do
+    PC.increment();
+
+    while (result == 0)
     {
         std::cout<<"round "<<i<<std::endl;
         result = mother(mem, CPUreg, PC);
         PC.increment();
         i++;
     }
-
-    while (result == 0); // Continue execution so long as no errors/ exceptions occur
 
     switch (result)
     {
@@ -71,20 +71,20 @@ int32_t read_file(memory &mem, std::fstream &infile)
 {
     char c;
     int t = 0;
-    long count = 4;
+    long count = 0;
 
     while (!(infile.eof()))
     {
         for (int i = 0; i < 8; i++)
         {
-            infile.get(c);
+            infile >> c;
             if (c == '1') t += (1 << (7-i));
         }
         if (invalid_instruction(count)) return -12;
         std::cout<<t<<std::endl;
         mem.store_byte(count, t);
         t = 0;
-        count++;
+        count += 4;
     }
     return 0;
 }
