@@ -159,7 +159,7 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
     const unsigned short shift_size = (instruction >> 6) & 0b11111;
     const unsigned short funct = instruction & 0b111111;
 
-    long long temp;
+    long long temp = 0;
 
     if (rt == 0) return -11;
     if (rs > 31 || rt > 31) return -11;
@@ -172,7 +172,7 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
             case 0x23    : CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] - (unsigned)CPUreg.reg[rt]; return 0; // unsigned subtraction
             case 0x18    : temp=(CPUreg.reg[rs]*CPUreg.reg[rt]);     //signed multiplication
                            CPUreg.hi=(temp>>32);
-                           CPUreg.lo=(temp<<32)>>32; return 0;
+                           CPUreg.lo=(temp & 0xFFFF); return 0;
             case 0x19    : temp=((unsigned)CPUreg.reg[rs]*(unsigned)CPUreg.reg[rt]);       //unsigned multiplication
                            CPUreg.hi=temp>>32;
                            CPUreg.lo=(temp<<32)>>32; return 0;
@@ -186,10 +186,8 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
             case 0x25    : CPUreg.reg[rd] = CPUreg.reg[rs] | CPUreg.reg[rt]; return 0;//bitwise or
             case 0x26    : CPUreg.reg[rd] = CPUreg.reg[rs] ^ CPUreg.reg[rt]; return 0;// bitwise xor
             case 0x27    : CPUreg.reg[rd] = ~(CPUreg.reg[rs] | CPUreg.reg[rt]);return 0; //bitwise NOR
-            case 0x2a    : if(CPUreg.reg[rs]<CPUreg.reg[rt]) CPUreg.reg[rd]=1;
-                           else CPUreg.reg[rd]=0; return 0;
-            case 0x2b    : if(CPUreg.reg[rs]<CPUreg.reg[rt]) CPUreg.reg[rd]=1;
-                           else CPUreg.reg[rd]=0;return 0;
+            case 0x2a    : if(CPUreg.reg[rs]<CPUreg.reg[rt]) CPUreg.reg[rd]=1; return 0;
+            case 0x2b    : if(CPUreg.reg[rs]<CPUreg.reg[rt]) CPUreg.reg[rd]=1; return 0;
             case 0x00    : CPUreg.reg[rd] = CPUreg.reg[rt]<<shift_size; return 0;// shift size is the shift amount
             case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rs]<<CPUreg.reg[rt]; return 0;
             case 0x02    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; return 0;
