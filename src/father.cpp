@@ -43,10 +43,10 @@ int main(int argc, char **argv)
     switch (result)
     {
         case -1: std::cout<<"Schmei"<<std::endl; return 0;// Program completed successfully
-        case -12: std::cout<<"Schmei"<<std::endl; return 0;// Invalid instruction
-        case -11: std::cout<<"Schmei"<<std::endl; return 0;// Memory exception
-        case -10: std::cout<<"Schmei"<<std::endl; return 0;// Arithmetic exception
-        default: std::cout<<"Schmei"<<std::endl; return 0;// Any other errors?
+        case -12: std::cout<<"Invalid instruction"<<std::endl; return 0;// Invalid instruction
+        case -11: std::cout<<"Invalid address"<<std::endl; return 0;// Memory exception
+        case -10: std::cout<<"Arithmetic exception"<<std::endl; return 0;// Arithmetic exception
+        default: std::cout<<"Other error"<<std::endl; return 0;// Any other errors?
     }
 
 
