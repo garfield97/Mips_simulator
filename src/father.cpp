@@ -77,7 +77,7 @@ int32_t read_file(memory &mem, std::fstream &infile)
     {
         for (int i = 0; i < 8; i++)
         {
-            infile >> c;
+            infile.get(c);
             if (c == '1') t += (1 << (7-i));
         }
         if (invalid_instruction(count)) return -12;

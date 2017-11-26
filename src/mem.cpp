@@ -22,9 +22,13 @@ memory::memory()
 }
 
 
- uint32_t memory::get_instruction(uint32_t location) const
+ uint32_t memory::get_instruction(uint32_t loc) const
 {
-     uint32_t inst = (mem[location] << 24) + (mem[location+1] << 16) + (mem[location+2] << 8) + mem[location+3];
+    loc /= 4;
+
+    loc += EXEC_START;
+
+    uint32_t inst = mem[loc];
 
     return inst;
 }
@@ -41,59 +45,91 @@ void memory::load_instruction(uint32_t loc, uint32_t inst)
 
 uint32_t memory::load_word(uint32_t loc)
 {
+    loc /= 4;
     loc += RW_START;
 
     if (loc == GET_C_START) return (get_c(loc));
     
-    uint32_t tmp = (mem[loc] << 24) + (mem[loc+1] << 16) + (mem[loc+2] << 8) + mem[loc+3];
+    uint32_t tmp = mem[loc];
+
     return tmp;
 }
 
 
 uint32_t memory::load_byte(uint32_t loc) const
 {
+    int pos = loc % 4;
+    loc /= 4;
     loc += RW_START;
+    uint32_t tmp = 0;
 
-    uint32_t tmp = mem[loc];
+    switch (pos)
+    {
+        case 0: tmp = (mem[loc] >> 16); break;
+        default: tmp = (mem[loc] & 0xFFFF); break;
+    }
+
     return tmp;
 }
 
 uint32_t memory::load_hword(uint32_t loc) const
 {
+    int pos = loc % 4;
+    loc /= 4;
     loc += RW_START;
+    
+    uint32_t tmp = 0;
 
-    uint32_t tmp = (mem[loc] << 24) + (mem[loc+1] << 16);
+    switch (pos)
+    {
+        case 0: tmp = (mem[loc] >> 23); break;
+        case 1: tmp = (mem[loc] >> 15) & 0xFF; break;
+        case 2: tmp = (mem[loc] >> 7) & 0xFF; break;
+        default: tmp = mem[loc] & 0xFF; break;
+    }
+
     return tmp;
 }
 
 
 void memory::store_word(uint32_t loc,  const int32_t input)
 {
+    loc /= 4;
     loc += RW_START;
 
     if (loc == PUT_C_START) put_c(input); return;
 
-    mem[loc] = input >> 24;
-    mem[loc + 1] = (input >> 16) & 0xF;
-    mem[loc + 2] = (input >> 8) & 0xF;
-    mem[loc + 3] = input & 0xF;
+    mem[loc] = input;
 }
 
 
 void memory::store_byte(uint32_t loc, const int32_t input)
 {
+    int pos = loc % 4;
+    loc /= 4;
     loc += RW_START;
 
-    mem[loc] = input & 0xF;
+    switch (pos)
+    {
+        case 0: mem[loc] = (input & 0xFF) << 23; break;
+        case 1: mem[loc] = (input & 0xFF) << 15; break;
+        case 2: mem[loc] = (input & 0xFF) << 7; break;
+        default: mem[loc] = input * 0xFF;
+    }
 }
 
 
 void memory::store_hword(uint32_t loc, const int32_t input)
 {
+    int pos = loc % 4;
+    loc /= 4;
     loc += RW_START;
 
-    mem[loc] = (input >> 8) & 0xF;
-    mem[loc + 1] = input & 0xF;
+    switch(pos)
+    {
+        case 0: mem[loc] = (input & 0xFF) << 15; break;
+        default: mem[loc] = (input & 0xFF); break;
+    }
 }
 
 
