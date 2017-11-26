@@ -127,7 +127,7 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
         case 0x0B: if ((unsigned)CPUreg.reg[rs] < (unsigned)(IMM)) CPUreg.reg[rt] = 1; return 0;
         case 0x0C: CPUreg.reg[rt] = CPUreg.reg[rs] & IMM; return 0;
         case 0x0D: CPUreg.reg[rt] = CPUreg.reg[rs] | IMM; return 0;
-        case 0x0F: CPUreg.reg[rt] = IMM << 16; return 0;
+        case 0x0F: mem.store_word(CPUreg.reg[rt], (IMM << 16)); return 0;
         case 0x23: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = mem.load_word(CPUreg.reg[rs]); return 0;
         case 0x24: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_byte(CPUreg.reg[rs])); return 0;
         case 0x25: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_hword(CPUreg.reg[rs])); return 0;
@@ -183,10 +183,10 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
             case 0x19    : temp=((unsigned)CPUreg.reg[rs]*(unsigned)CPUreg.reg[rt]);       //unsigned multiplication
                            CPUreg.hi=temp>>32;
                            CPUreg.lo=(temp<<32)>>32; return 0;
-            case 0x1a    : if(division_error(rs, rt)) {return -10;} CPUreg.lo=CPUreg.reg[rs]/CPUreg.reg[rt];             //signed division
-                           CPUreg.hi=CPUreg.reg[rs]%CPUreg.reg[rt]; return 0;
-            case 0x1b    : if(division_error(rs, rt)) {return -10;} CPUreg.lo=(unsigned)CPUreg.reg[rs]/(unsigned)CPUreg.reg[rt];      //unsigned division
-                           CPUreg.hi=CPUreg.reg[rs]%CPUreg.reg[rt];  return 0;
+            case 0x1a    : if(division_error(rs, rt)) {CPUreg.reg[rd] = 1;}
+                            else {CPUreg.reg[rd] = CPUreg.reg[rs]/CPUreg.reg[rt];} return 0;
+            case 0x1b    : if(division_error(rs, rt)) {CPUreg.reg[rd] = 1;}
+                            else {CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs]/(unsigned)CPUreg.reg[rt];} return 0;
             case 0x10    : CPUreg.reg[rd]=CPUreg.hi; return 0;// move from hi
             case 0x12    : CPUreg.reg[rd]=CPUreg.lo; return 0;// move fromlo
             case 0x24    : CPUreg.reg[rd] = CPUreg.reg[rs] & CPUreg.reg[rt]; return 0;// bitwise AND

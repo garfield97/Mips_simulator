@@ -26,8 +26,6 @@ memory::memory()
 {
     loc /= 4;
 
-    loc += EXEC_START;
-
     uint32_t inst = mem[loc];
 
     return inst;
@@ -37,7 +35,6 @@ memory::memory()
 void memory::store_instruction(uint32_t loc, uint32_t inst)
 {
     loc /= 4;
-    loc += EXEC_START;
 
     mem[loc] = inst;
 }
@@ -46,9 +43,8 @@ void memory::store_instruction(uint32_t loc, uint32_t inst)
 uint32_t memory::load_word(uint32_t loc)
 {
     loc /= 4;
-    loc += RW_START;
 
-    if (loc == GET_C_START) return (get_c(loc));
+    if (loc == GET_C_START) {return (get_c(loc));}
     
     uint32_t tmp = mem[loc];
 
@@ -60,7 +56,7 @@ uint32_t memory::load_byte(uint32_t loc) const
 {
     int pos = loc % 4;
     loc /= 4;
-    loc += RW_START;
+
     uint32_t tmp = 0;
 
         switch (pos)
@@ -78,7 +74,6 @@ uint32_t memory::load_hword(uint32_t loc) const
 {
     int pos = loc % 4;
     loc /= 4;
-    loc += RW_START;
     
     uint32_t tmp = 0;
 
@@ -95,9 +90,8 @@ uint32_t memory::load_hword(uint32_t loc) const
 void memory::store_word(uint32_t loc,  const int32_t input)
 {
     loc /= 4;
-    loc += RW_START;
 
-    if (loc == PUT_C_START) put_c(input); return;
+    if (loc == PUT_C_START) {put_c(input); return;}
 
     mem[loc] = input;
 }
@@ -107,7 +101,6 @@ void memory::store_byte(uint32_t loc, const int32_t input)
 {
     int pos = loc % 4;
     loc /= 4;
-    loc += RW_START;
 
     switch (pos)
     {
@@ -123,7 +116,6 @@ void memory::store_hword(uint32_t loc, const int32_t input)
 {
     int pos = loc % 4;
     loc /= 4;
-    loc += RW_START;
 
     switch(pos)
     {

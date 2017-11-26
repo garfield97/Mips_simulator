@@ -17,7 +17,7 @@
 bool RW_error(uint32_t access_addr) // Error code -11
 {
     access_addr /= 4;
-    access_addr += RW_START;
+
     if (access_addr < RW_START || access_addr >= RW_END) return true;
     return false;
 }
@@ -26,6 +26,7 @@ bool RW_error(uint32_t access_addr) // Error code -11
 bool mem_range_error(uint32_t access_addr) // Error code -11
 {
     access_addr /= 4;
+
     if (access_addr >= MEM_SIZE) return true;
     return false;
 }
@@ -34,7 +35,7 @@ bool mem_range_error(uint32_t access_addr) // Error code -11
 bool invalid_instruction(uint32_t access_addr) // Error code -12
 {
     access_addr /= 4;
-    access_addr += EXEC_START;
+
     if (access_addr < EXEC_START || access_addr >= EXEC_END) return true;
     return false;
 }
@@ -55,7 +56,7 @@ bool addition_exception(uint32_t op1, uint32_t op2) // Error code -10
 }*/
 
 
-bool division_error(uint32_t op1, uint32_t op2) // Error code -10
+bool division_error(uint32_t op1, uint32_t op2) // Not an exception but yields unpredictable result
 {
     if (op2 == 0) return true;
     return false;
