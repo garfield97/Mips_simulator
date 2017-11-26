@@ -21,6 +21,7 @@ int main(int argc, char **argv)
     registers CPUreg;
     program_counter PC;
     int result = 0;
+    int i = 0;
 
     std::string filename = argv[1];
 
@@ -36,19 +37,21 @@ int main(int argc, char **argv)
 
     do
     {
+        std::cout<<"round "<<i<<std::endl;
         result = mother(mem, CPUreg, PC);
         PC.increment();
+        i++;
     }
 
     while (result == 0); // Continue execution so long as no errors/ exceptions occur
 
     switch (result)
     {
-        case -1: std::cout<<"Schmei"<<std::endl; return 0;// Program completed successfully
-        case -12: std::cout<<"Invalid instruction"<<std::endl; return 0;// Invalid instruction
-        case -11: std::cout<<"Invalid address"<<std::endl; return 0;// Memory exception
-        case -10: std::cout<<"Arithmetic exception"<<std::endl; return 0;// Arithmetic exception
-        default: std::cout<<"Other error"<<std::endl; return 0;// Any other errors?
+        case -1: std::cout<<result<<" Schmei"<<std::endl; break;// Program completed successfully
+        case -12: std::cout<<result<<" Invalid instruction"<<std::endl; break;// Invalid instruction
+        case -11: std::cout<<result<<" Invalid address"<<std::endl; break;// Memory exception
+        case -10: std::cout<<result<<" Arithmetic exception"<<std::endl; break;// Arithmetic exception
+        default: std::cout<< result<<" Other error"<<std::endl; break;// Any other errors?
     }
 
 
@@ -68,7 +71,7 @@ int32_t read_file(memory &mem, std::fstream &infile)
 {
     char c;
     int t = 0;
-    long count = 0;
+    long count = 4;
 
     while (!(infile.eof()))
     {
@@ -78,6 +81,7 @@ int32_t read_file(memory &mem, std::fstream &infile)
             if (c == '1') t += (1 << (7-i));
         }
         if (invalid_instruction(count)) return -12;
+        std::cout<<t<<std::endl;
         mem.store_byte(count, t);
         t = 0;
         count++;
