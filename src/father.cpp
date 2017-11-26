@@ -32,6 +32,8 @@ int main(int argc, char **argv)
 
     if (read_file(mem, infile) == -11) std::cout<<"File too large to read"<<std::endl;; //If = -11 then binary too large to store in instruction memory
 
+    PC.load_PC(4);
+
     do
     {
         result = mother(mem, CPUreg, PC);
@@ -106,12 +108,13 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
     const short opcode = instruction >> 26;
 
     if (rs > 31 || rt > 31) return -11;
+    if (rt == 0) return -11;
 
     switch (opcode)
     {
         case 0x04: if (mem_range_error(IMM)) {return -11;} if (CPUreg.reg[rs] == CPUreg.reg[rt]) PC.load_PC(IMM); return 0; return 0; //BEQ ADD PC LOAD THING HERE
         case 0x05: if (mem_range_error(IMM)) {return -11;} if (CPUreg.reg[rs] != CPUreg.reg[rt]) PC.load_PC(IMM); return 0; //BNE AND HERE
-        case 0x08: CPUreg.reg[rt] = CPUreg.reg[rs] + IMM; return 0;
+        case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {return -10;} CPUreg.reg[rt] = CPUreg.reg[rs] + IMM; return 0;
         case 0x09: CPUreg.reg[rt] = (unsigned)(CPUreg.reg[rs]) + (unsigned)(IMM); return 0;
         case 0x0A: if (CPUreg.reg[rs] < IMM) CPUreg.reg[rt] = 1; return 0;
         case 0x0B: if ((unsigned)CPUreg.reg[rs] < (unsigned)(IMM)) CPUreg.reg[rt] = 1; return 0;
@@ -161,13 +164,13 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
 
     long long temp = 0;
 
-    if (rt == 0) return -11;
+    if (rd == 0) return -11;
     if (rs > 31 || rt > 31) return -11;
 
     switch (funct)
     {
     		case 0x20    : if (addition_exception(rs, rt)) {return -10;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; return 0;//signed addition
-            case 0x21    : if (addition_exception(rs, rt)) {return -10;} CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] + (unsigned)CPUreg.reg[rt]; return 0;// unsigned addition
+            case 0x21    : CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] + (unsigned)CPUreg.reg[rt]; return 0;// unsigned addition
             case 0x22    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; return 0; // signed subtraction
             case 0x23    : CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] - (unsigned)CPUreg.reg[rt]; return 0; // unsigned subtraction
             case 0x18    : temp=(CPUreg.reg[rs]*CPUreg.reg[rt]);     //signed multiplication
