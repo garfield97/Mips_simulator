@@ -63,10 +63,12 @@ uint32_t memory::load_byte(uint32_t loc) const
     loc += RW_START;
     uint32_t tmp = 0;
 
-    switch (pos)
+        switch (pos)
     {
-        case 0: tmp = (mem[loc] >> 16); break;
-        default: tmp = (mem[loc] & 0xFFFF); break;
+        case 0: tmp = (mem[loc] >> 24); break;
+        case 1: tmp = (mem[loc] >> 16) & 0xFF; break;
+        case 2: tmp = (mem[loc] >> 8) & 0xFF; break;
+        default: tmp = mem[loc] & 0xFF; break;
     }
 
     return tmp;
@@ -80,12 +82,10 @@ uint32_t memory::load_hword(uint32_t loc) const
     
     uint32_t tmp = 0;
 
-    switch (pos)
+        switch (pos)
     {
-        case 0: tmp = (mem[loc] >> 23); break;
-        case 1: tmp = (mem[loc] >> 15) & 0xFF; break;
-        case 2: tmp = (mem[loc] >> 7) & 0xFF; break;
-        default: tmp = mem[loc] & 0xFF; break;
+        case 0: tmp = (mem[loc] >> 16); break;
+        default: tmp = (mem[loc] & 0xFFFF); break;
     }
 
     return tmp;
@@ -111,9 +111,9 @@ void memory::store_byte(uint32_t loc, const int32_t input)
 
     switch (pos)
     {
-        case 0: mem[loc] = (input & 0xFF) << 23; break;
-        case 1: mem[loc] = (input & 0xFF) << 15; break;
-        case 2: mem[loc] = (input & 0xFF) << 7; break;
+        case 0: mem[loc] = (input & 0xFF) << 24; break;
+        case 1: mem[loc] = (input & 0xFF) << 16; break;
+        case 2: mem[loc] = (input & 0xFF) << 8; break;
         default: mem[loc] = input * 0xFF;
     }
 }
@@ -127,7 +127,7 @@ void memory::store_hword(uint32_t loc, const int32_t input)
 
     switch(pos)
     {
-        case 0: mem[loc] = (input & 0xFF) << 15; break;
+        case 0: mem[loc] = (input & 0xFF) << 16; break;
         default: mem[loc] = (input & 0xFF); break;
     }
 }

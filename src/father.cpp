@@ -4,8 +4,9 @@
 #include "headers/pc.hpp"
 #include <fstream>
 #include "headers/error_check.hpp"
-#include <cinttypes>
 #include <cstdio>
+#include <bitset>
+
 
 
 int32_t mother(memory &mem, registers &CPUreg, program_counter &PC);
@@ -14,6 +15,7 @@ int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const  uint32
 int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
 int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
 int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction);
+uint32_t sign_extend(uint32_t in);
 
 
 int main(int argc, char **argv)
@@ -28,11 +30,11 @@ int main(int argc, char **argv)
 
     std::fstream infile;
 
-    infile.open(filename.c_str());
+    infile.open(filename.c_str(), std::ios::binary | std::ios::in);
 
     if (!infile.is_open()) {std::cout<<"Invalid filename"<<std::endl; return 0;}
 
-    if (read_file(mem, infile) == -11) {std::cout<<"File too large to read"<<std::endl; result = -11;} //If = -11 then binary too large to store in instruction memory
+    if (read_file(mem, infile) == -12) {std::cout<<"File too large to read"<<std::endl; result = -12;} //If = -11 then binary too large to store in instruction memory
 
     infile.close();
 
@@ -42,6 +44,7 @@ int main(int argc, char **argv)
     {
         std::cout<<"round "<<i<<std::endl;
         result = mother(mem, CPUreg, PC);
+        CPUreg.reg[0] = 0;
         PC.increment();
         i++;
     }
@@ -62,7 +65,7 @@ int main(int argc, char **argv)
 
 int32_t mother(memory &mem, registers &CPUreg, program_counter &PC)
 {
-     int32_t instruction = mem.get_instruction(PC.get_PC()); // Retrieve instruction from memory
+     uint32_t instruction = mem.get_instruction(PC.get_PC()); // Retrieve instruction from memory
 
     return (decode(mem, CPUreg, PC, instruction)); // Decode and execute
 }
@@ -71,52 +74,56 @@ int32_t mother(memory &mem, registers &CPUreg, program_counter &PC)
 int32_t read_file(memory &mem, std::fstream &infile)
 {
     char c;
-    int t = 0;
-    long count = 0;
+    uint32_t t = 0;
+    unsigned long count = 0;
 
-    while (!(infile.eof()))
+    while (!infile.eof())
     {
-        for (int i = 0; i < 33; i++)
+        for (int i = 0; i < 32; i++)
         {
-            infile.get(c);
-            std::cout<<std::bitset<32>(t)<<std::endl;
-            fflush(stdin);
-            getchar();
+            infile >> c;
             if (c == '1') t += (1 << (31-i));
         }
-        if (invalid_instruction(count)) return -12;
-        std::cout<<t<<std::endl;
+
+        if (t == 0x00000000) break;
+
         mem.store_instruction(count, t);
         t = 0;
         count += 4;
     }
+
     return 0;
 }
 
 
 int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_t instruction)
 {
-    uint32_t opcode = instruction >> 25;
+    uint32_t opcode = instruction >> 26;
 
     switch (opcode)
     {
         case 0b000000: return (r_type(CPUreg, PC, instruction));// R - Type
         case 0b000010: return (j_type(mem, CPUreg, PC, instruction));// J - Type
         case 0b000011: return (j_type(mem, CPUreg, PC, instruction));// J - Type
-        default: if (!invalid_opcode(opcode)) {return (i_type(mem, CPUreg, PC, instruction));} return -12;// I - Type
+        default: if (invalid_opcode(opcode)) {return -12;} return (i_type(mem, CPUreg, PC, instruction)); // I - Type
     }
 }
 
 
 int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
 {
-    const short rs = (instruction >> 21) & 0b11111;
-    const short rt = (instruction >> 16) & 0b11111;
-    const short IMM = instruction & 0XFF;
-    const short opcode = instruction >> 26;
+    const unsigned short rs = (instruction >> 21) & 0b11111;
+    const unsigned short rt = (instruction >> 16) & 0b11111;
+    uint32_t IMM = instruction & 0XFFFF;
+    const unsigned short opcode = instruction >> 26;
+
+    IMM = sign_extend(IMM);
+
+    std::cout<<std::bitset<5>(rs)<<" "<<std::bitset<5>(rt)<<" "<<std::bitset<32>(IMM)<<" "<<std::bitset<6>(opcode)<<std::endl;
+    fflush(stdin);
+    getchar();
 
     if (rs > 31 || rt > 31) return -11;
-    if (rt == 0) return -11;
 
     switch (opcode)
     {
@@ -143,7 +150,7 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
 int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction)
 {
     const uint32_t address = instruction & 0x3FFFFC;
-    const unsigned short type = instruction >> 25;
+    const unsigned short type = instruction >> 26;
 
     if (mem_range_error(address)) return -11;
 
@@ -172,7 +179,6 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
 
     long long temp = 0;
 
-    if (rd == 0) return -11;
     if (rs > 31 || rt > 31) return -11;
 
     switch (funct)
@@ -209,4 +215,13 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
             case 0x09    : if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rs]); return 0;
             default: return -12;
     }
+}
+
+
+uint32_t sign_extend(uint32_t in)
+{
+    int sign = in >> 15;
+    
+    if (sign == 1) return (in + 0xFFFF0000);
+    return in;
 }
