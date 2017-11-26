@@ -88,14 +88,12 @@ int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_
 {
     uint32_t opcode = instruction >> 25;
 
-    if (invalid_opcode(opcode)) return -12;
-
     switch (opcode)
     {
         case 0b000000: return (r_type(CPUreg, PC, instruction));// R - Type
         case 0b000010: return (j_type(mem, CPUreg, PC, instruction));// J - Type
         case 0b000011: return (j_type(mem, CPUreg, PC, instruction));// J - Type
-        default: return (i_type(mem, CPUreg, PC, instruction));// I - Type
+        default: if (!invalid_opcode(opcode)) {return (i_type(mem, CPUreg, PC, instruction));} return -12;// I - Type
     }
 }
 
