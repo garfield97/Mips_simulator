@@ -119,15 +119,26 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
 
     switch (opcode)
     {
-        case 0x04: if (mem_range_error(IMM)) {return -11;} if (CPUreg.reg[rs] == CPUreg.reg[rt]) PC.load_PC(IMM); return 0; return 0; // beq
-        case 0x05: if (mem_range_error(IMM)) {return -11;} if (CPUreg.reg[rs] != CPUreg.reg[rt]) PC.load_PC(IMM); return 0; // bne
-        case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {return -10;} CPUreg.reg[rt] = CPUreg.reg[rs] + IMM; return 0; //addi
-        case 0x09: CPUreg.reg[rt] = (unsigned)(CPUreg.reg[rs]) + (unsigned)(IMM); return 0; // addiu
+        case 0x04: if (mem_range_error(IMM)) {return -11;} if (CPUreg.reg[rs] == CPUreg.reg[rt]) {PC.load_PC(IMM);} return 0; return 0; // beq
+        case 0x05: if (mem_range_error(IMM)) {return -11;} if (CPUreg.reg[rs] != CPUreg.reg[rt]) {PC.load_PC(IMM);} return 0; // bne
+        case 0x01: if (mem_range_error(IMM)) {return -11;} 
+                    if (CPUreg.reg[rt] == 0x1) {if (CPUreg.reg[rs] >= 0) PC.load_PC(IMM); return 0;} //bgez
+                    else if (CPUreg.reg[rt] == 0b10001) {if (CPUreg.reg[rs] >= 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(IMM);} return 0;} //bgezal
+                    else if (CPUreg.reg[rt] == 0x0) {if (CPUreg.reg[rs] < 0) {PC.load_PC(IMM);} return 0;} //bltz
+                    else if (CPUreg.reg[rt] == 0x10) {if (CPUreg.reg[rs] < 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(IMM);} return 0;} //bltzal
+                    return -12;
+        case 0x07: if (mem_range_error(IMM)) {return -11;}
+                    if (CPUreg.reg[rs] > 0) {PC.load_PC(IMM);} return 0; // bgtz
+        case 0x06: if (mem_range_error(IMM)) {return -11;} 
+                    if (CPUreg.reg[rs] <= 0) {PC.load_PC(IMM);} return 0; // blez
+        case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {return -10;} CPUreg.reg[rs] = CPUreg.reg[rt] + IMM; return 0; //addi
+        case 0x09: CPUreg.reg[rs] = (unsigned)(CPUreg.reg[rt]) + (unsigned)(IMM); return 0; // addiu
         case 0x0A: if (CPUreg.reg[rs] < IMM) CPUreg.reg[rt] = 1; return 0; // slti
         case 0x0B: if ((unsigned)CPUreg.reg[rs] < (unsigned)(IMM)) CPUreg.reg[rt] = 1; return 0; // sltiu
-        case 0x0C: CPUreg.reg[rt] = CPUreg.reg[rs] & IMM; return 0; // andi
-        case 0x0D: CPUreg.reg[rt] = CPUreg.reg[rs] | IMM; return 0; // ori
+        case 0x0C: CPUreg.reg[rs] = CPUreg.reg[rt] & IMM; return 0; // andi
+        case 0x0D: CPUreg.reg[rs] = CPUreg.reg[rt] | IMM; return 0; // ori
         case 0x0F: mem.store_word(CPUreg.reg[rt], (IMM << 16)); return 0; // lui
+        case 0x14: CPUreg.reg[rt] = CPUreg.reg[rs] ^ IMM; // xori
         case 0x23: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = mem.load_word(CPUreg.reg[rs]); return 0; // lw
         case 0x24: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_byte(CPUreg.reg[rs])); return 0; // lbu
         case 0x25: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_hword(CPUreg.reg[rs])); return 0; // lhu
@@ -141,8 +152,12 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
 
 int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction)
 {
-    const uint32_t address = instruction & 0x3FFFFC;
+    uint32_t address = instruction & 0x3FFFFC;
     const unsigned short type = instruction >> 26;
+    uint32_t tmp = PC.get_PC();
+
+    address = address << 2;
+    address += (tmp & 0xF000);
 
     if (mem_range_error(address)) return -11;
 
@@ -173,36 +188,36 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
 
     switch (funct)
     {
-    		case 0x20    : if (addition_exception(rs, rt)) {return -10;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; return 0;//add
-            case 0x21    : CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] + (unsigned)CPUreg.reg[rt]; return 0;// addu
-            case 0x22    : CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; return 0; // sub
-            case 0x23    : CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] - (unsigned)CPUreg.reg[rt]; return 0; // subu
+    		case 0x20    : if (addition_exception(rs, rt)) {return -10;} CPUreg.reg[rs] = CPUreg.reg[rt] + CPUreg.reg[rd]; return 0;//add
+            case 0x21    : CPUreg.reg[rs] = (unsigned)CPUreg.reg[rt] + (unsigned)CPUreg.reg[rd]; return 0;// addu
+            case 0x22    : CPUreg.reg[rs] = CPUreg.reg[rt] - CPUreg.reg[rd]; return 0; // sub
+            case 0x23    : CPUreg.reg[rs] = (unsigned)CPUreg.reg[rt] - (unsigned)CPUreg.reg[rd]; return 0; // subu
             case 0x18    : temp=(CPUreg.reg[rs]*CPUreg.reg[rt]);// mult
                            CPUreg.hi=(temp>>32);
                            CPUreg.lo=(temp & 0xFFFF); return 0;
-            case 0x19    : temp=((unsigned)CPUreg.reg[rs]*(unsigned)CPUreg.reg[rt]);// multu
+            case 0x19    : temp=((unsigned)CPUreg.reg[rt]*(unsigned)CPUreg.reg[rd]);// multu
                            CPUreg.hi=temp>>32;
                            CPUreg.lo=(temp<<32)>>32; return 0;
             case 0x1a    : if(division_error(rs, rt)) {CPUreg.reg[rd] = 1;} // div
-                            else {CPUreg.reg[rd] = CPUreg.reg[rs]/CPUreg.reg[rt];} return 0;
+                            else {CPUreg.hi = CPUreg.reg[rt] % CPUreg.reg[rd]; CPUreg.lo = CPUreg.reg[rt]/CPUreg.reg[rd]; } return 0;
             case 0x1b    : if(division_error(rs, rt)) {CPUreg.reg[rd] = 1;} // divu
-                            else {CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs]/(unsigned)CPUreg.reg[rt];} return 0;
-            case 0x10    : CPUreg.reg[rd]=CPUreg.hi; return 0;// mfhi
-            case 0x12    : CPUreg.reg[rd]=CPUreg.lo; return 0;// mflo
-            case 0x24    : CPUreg.reg[rd] = CPUreg.reg[rs] & CPUreg.reg[rt]; return 0;// and
-            case 0x25    : CPUreg.reg[rd] = CPUreg.reg[rs] | CPUreg.reg[rt]; return 0;// or
-            case 0x26    : CPUreg.reg[rd] = CPUreg.reg[rs] ^ CPUreg.reg[rt]; return 0;// xor
-            case 0x27    : CPUreg.reg[rd] = ~(CPUreg.reg[rs] | CPUreg.reg[rt]);return 0; // nor
-            case 0x2a    : if(CPUreg.reg[rs]<CPUreg.reg[rt]) CPUreg.reg[rd]=1; return 0; // slt
-            case 0x2b    : if(CPUreg.reg[rs]<CPUreg.reg[rt]) CPUreg.reg[rd]=1; return 0; // sltu
-            case 0x00    : CPUreg.reg[rd] = CPUreg.reg[rt]<<1; return 0;// sll
-            case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rs]<<CPUreg.reg[rt]; return 0; // sllv
-            case 0x02    : CPUreg.reg[rd] = CPUreg.reg[rt]>>1; return 0; // srl
-            case 0x06    : CPUreg.reg[rd] = CPUreg.reg[rs]>>CPUreg.reg[rt]; return 0; // srlv
-            case 0x03    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; return 0; // sra
-            case 0x07    : CPUreg.reg[rd] = CPUreg.reg[rs]>>CPUreg.reg[rt]; return 0;// arithmetic shift with the amount
-            case 0x08    : if (invalid_instruction(CPUreg.reg[rs])) {return -12;} PC.load_PC(CPUreg.reg[rs]); return 0; //jr
-            case 0x09    : if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rs]); return 0; //jalr
+                            else {CPUreg.hi = (unsigned)CPUreg.reg[rt] % (unsigned)CPUreg.reg[rd]; CPUreg.lo = (unsigned)CPUreg.reg[rt]/(unsigned)CPUreg.reg[rd]; } return 0;
+            case 0x10    : CPUreg.reg[rs]=CPUreg.hi; return 0;// mfhi
+            case 0x12    : CPUreg.reg[rs]=CPUreg.lo; return 0;// mflo
+            case 0x24    : CPUreg.reg[rs] = CPUreg.reg[rt] & CPUreg.reg[rd]; return 0;// and
+            case 0x25    : CPUreg.reg[rs] = CPUreg.reg[rt] | CPUreg.reg[rd]; return 0;// or
+            case 0x26    : CPUreg.reg[rs] = CPUreg.reg[rt] ^ CPUreg.reg[rd]; return 0;// xor
+            case 0x27    : CPUreg.reg[rs] = ~(CPUreg.reg[rt] | CPUreg.reg[rd]);return 0; // nor
+            case 0x2a    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return 0; // slt
+            case 0x2b    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return 0; // sltu
+            case 0x00    : CPUreg.reg[rs] = CPUreg.reg[rt]<<1; return 0;// sll
+            case 0x04    : CPUreg.reg[rs] = CPUreg.reg[rt]<<CPUreg.reg[rd]; return 0; // sllv
+            case 0x02    : CPUreg.reg[rs] = CPUreg.reg[rt]>>1; return 0; // srl
+            case 0x06    : CPUreg.reg[rs] = CPUreg.reg[rt]>>CPUreg.reg[rd]; return 0; // srlv
+            case 0x03    : CPUreg.reg[rs] = CPUreg.reg[rt]>>1; return 0; // sra
+            case 0x07    : CPUreg.reg[rs] = CPUreg.reg[rt]>>CPUreg.reg[rd]; return 0;// srav
+            case 0x08    : if (invalid_instruction(CPUreg.reg[rt])) {return -12;} PC.load_PC(CPUreg.reg[rt]); return 0; //jr
+            case 0x09    : if (RW_error(CPUreg.reg[rt])) {return -11;} CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rt]); return 0; //jalr
             default: return -12;
     }
 }
