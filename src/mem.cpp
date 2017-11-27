@@ -139,3 +139,39 @@ void memory::put_c(int32_t item)
 {
     std::cout<<std::bitset<32>(item)<<std::endl;
 }
+
+
+uint32_t memory::load_word_left(uint32_t loc)
+{
+    int tmp = loc % 4;
+    loc %= 4;
+
+    uint32_t res;
+
+    switch (tmp)
+    {
+        case 0: res = (mem[loc-1] << 8) + (mem[loc] >> 24); return res;
+        case 1: res = (mem[loc-1] << 16) + (mem[loc] >> 16); return res;
+        case 2: res = (mem[loc-1] << 24) + (mem[loc] >> 8); return res;
+        default: return res;
+    }
+
+}
+
+
+uint32_t memory::load_word_right(uint32_t loc)
+{
+    int tmp = loc % 4;
+    loc %= 4;
+
+    uint32_t res;
+
+    switch (tmp)
+    {
+        case 0: res = mem[loc]; return res;
+        case 1: res = (mem[loc] << 8) + (mem[loc+1] >> 24); return res;
+        case 2: res = (mem[loc] << 16) + (mem[loc+1] >> 16); return res;
+        default: res = (mem[loc] << 24) + (mem[loc+1] >> 8); return res;
+    }
+
+}

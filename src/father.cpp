@@ -147,6 +147,7 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
         case 0x29: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(CPUreg.reg[rs])) {return -1;} mem.store_hword(CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sh
         case 0x30: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(CPUreg.reg[rs])) {return -1;} mem.store_word(CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
         case 0x22: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(CPUreg.reg[rs])) (unsigned)mem.load_word_left(CPUreg.reg[rs]); return 0;// lwl
+        case 0x26: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(CPUreg.reg[rs])) (unsigned)mem.load_word_right(CPUreg.reg[rs]); return 0;// lwr
         default: return -12;
     }
 }
@@ -166,10 +167,10 @@ int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32
     switch (type)
     {
         case 0x02:
-        	PC.load_PC(address);
+        	PC.load_PC(address); // j
         	return 0;
         default:
-        	CPUreg.reg[31] = PC.get_PC();
+        	CPUreg.reg[31] = PC.get_PC(); // jal
         	PC.load_PC(address);
         	return 0;
     }

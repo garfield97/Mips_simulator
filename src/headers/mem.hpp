@@ -19,6 +19,8 @@ class memory
     void store_byte(uint32_t loc, const int32_t input);
     uint32_t get_c(uint32_t loc_corrected);
     void put_c(int32_t item);
+    uint32_t load_word_left(uint32_t loc);
+    uint32_t load_word_right(uint32_t loc);
 
     private: 
 
