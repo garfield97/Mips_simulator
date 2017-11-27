@@ -42,9 +42,9 @@ void memory::store_instruction(uint32_t loc, uint32_t inst)
 
 uint32_t memory::load_word(uint32_t loc)
 {
-    loc /= 4;
+    if (loc == GET_C_START*4) {return (get_c(loc));}
 
-    if (loc == GET_C_START) {return (get_c(loc));}
+    loc /= 4;
     
     uint32_t tmp = mem[loc];
 
@@ -89,9 +89,9 @@ uint32_t memory::load_hword(uint32_t loc) const
 
 void memory::store_word(uint32_t loc,  const int32_t input)
 {
-    loc /= 4;
+    if (loc == PUT_C_START*4) {put_c(input); return;}
 
-    if (loc == PUT_C_START) {put_c(input); return;}
+    loc /= 4;
 
     mem[loc] = input;
 }
@@ -127,22 +127,35 @@ void memory::store_hword(uint32_t loc, const int32_t input)
 
 uint32_t memory::get_c(uint32_t loc_corrected)
 {
-    uint32_t tmp;
+    volatile int8_t *GETC=(volatile int8_t *)GET_C_START;
 
-    scanf("%" SCNd32, &tmp);
-    
-    return tmp;
+    int8_t c = *GETC;
+
+    uint32_t ch = 0;
+
+    if(c != -1)
+    {
+        ch = c;
+    }
+
+    return ch;
 }
 
 
 void memory::put_c(int32_t item)
 {
-    std::cout<<std::bitset<32>(item)<<std::endl;
+    mem[PUT_C_START] = item;
 }
 
 
 uint32_t memory::load_word_left(uint32_t loc)
 {
+    if (loc <= ((GET_C_END*4)-1) || loc > GET_C_START*4)
+    {
+        if (loc == ((GET_C_END*4)-1)) return get_c(loc);
+        return (-1);
+    }
+
     int tmp = loc % 4;
     loc %= 4;
 
@@ -163,6 +176,12 @@ uint32_t memory::load_word_right(uint32_t loc)
 {
     int tmp = loc % 4;
     loc %= 4;
+
+    if (loc >= (GET_C_START) || loc < GET_C_END)
+    {
+        if (loc == (GET_C_START)) return get_c(loc);
+        return (-1);
+    }
 
     uint32_t res = 0;
 
