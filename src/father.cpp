@@ -230,10 +230,18 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
 }
 
 
-uint32_t sign_extend(uint32_t in)
+/*uint32_t sign_extend(uint32_t in)
 {
     int sign = in >> 15;
     
     if (sign == 1) return (in + 0xFFFF0000);
     return in;
 }
+*/
+
+
+
+
+
+
+
