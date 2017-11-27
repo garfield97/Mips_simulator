@@ -53,8 +53,10 @@ bool subtraction_exception(uint32_t op1, uint32_t op2)
 {
     long long tmp = op1;
 
-    if (abs(tmp) > abs((INT_MAX + op2)) return true;
+    if (abs(tmp) > abs((INT_MAX + op2)){ 
+    return true;
     return false;
+    }
 }
 
 
