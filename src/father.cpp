@@ -240,17 +240,6 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
 */
 
 
-uint32_t logical_shift_left(uint32_t input,uint32_t shift_size){
-
-uint32_t input,shift_size;
-
-
-
-
-
-
-}
-
 
 uint32_t arithmetic_shift_right(uint32_t input,uint32_t shift_size){
 
