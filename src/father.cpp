@@ -114,7 +114,7 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
     uint32_t IMM = instruction & 0XFFFF;
     const unsigned short opcode = instruction >> 26;
 
-    IMM = sign_extend(IMM);
+    //IMM = sign_extend(IMM);
 
     if (rs > 31 || rt > 31) return -11;
 
@@ -140,16 +140,16 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
         case 0x0D: CPUreg.reg[rs] = CPUreg.reg[rt] | IMM; return 0; // ori
         case 0x0F: mem.store_word(CPUreg.reg[rt], (IMM << 16)); return 0; // lui
         case 0x14: CPUreg.reg[rt] = CPUreg.reg[rs] ^ IMM; // xori
-        case 0x23: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = mem.load_word(IMM); return 0; // lw
-        case 0x24: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_byte(IMM)); return 0; // lbu
-        case 0x25: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_hword(IMM)); return 0; // lhu
-        case 0x28: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM)) {return -1;} mem.store_byte(IMM, CPUreg.reg[rt]); return 0; // sb
-        case 0x29: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM)) {return -1;} mem.store_hword(IMM, CPUreg.reg[rt]); return 0; // sh
-        case 0x30: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM)) {return -1;} mem.store_word(IMM, CPUreg.reg[rt]); return 0; // sw
-        case 0x22: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM)) CPUreg.reg[rt] = mem.load_word_left(IMM); return 0;// lwl
-        case 0x26: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM)) CPUreg.reg[rt] = mem.load_word_right(IMM); return 0;// lwr
-        case 0x20: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (mem.load_byte(IMM)); return 0; // lb
-        case 0x21: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (mem.load_hword(IMM)); return 0; // lh
+        case 0x23: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = mem.load_word(IMM + CPUreg.reg[rs]); return 0; // lw
+        case 0x24: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lbu
+        case 0x25: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_hword(IMM + CPUreg.reg[rs])); return 0; // lhu
+        case 0x28: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM + CPUreg.reg[rs])) {return -1;} mem.store_byte(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sb
+        case 0x29: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM + CPUreg.reg[rs])) {return -1;} mem.store_hword(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sh
+        case 0x30: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM + CPUreg.reg[rs])) {return -1;} mem.store_word(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
+        case 0x22: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM + CPUreg.reg[rs])) CPUreg.reg[rt] = mem.load_word_left(IMM + CPUreg.reg[rs]); return 0;// lwl
+        case 0x26: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM + CPUreg.reg[rs])) CPUreg.reg[rt] = mem.load_word_right(IMM + CPUreg.reg[rs]); return 0;// lwr
+        case 0x20: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lb
+        case 0x21: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (mem.load_hword(IMM + CPUreg.reg[rs])); return 0; // lh
         default: return -12;
     }
 }
