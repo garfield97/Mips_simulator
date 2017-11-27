@@ -52,9 +52,12 @@ bool addition_exception(uint32_t op1, uint32_t op2) // Error code -10
 bool subtraction_exception(uint32_t op1, uint32_t op2)
 {
     long long tmp = op1;
+    uint32_t comp1, comp2;
 
-    if (abs(tmp) > abs((INT_MAX + op2)))
-    return true;
+    comp1 = tmp;
+    comp2 = INT_MAX + op2;
+
+    if (comp1 > comp2) return true;
     return false;
     
 }
