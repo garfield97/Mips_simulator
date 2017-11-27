@@ -20,7 +20,7 @@ registers.o : src/registers.cpp src/headers/registers.hpp
 mem.o : src/mem.cpp src/headers/mem.hpp
 	$(CC) $(CFLAGS) -c src/mem.cpp
 
-pc.o : src/pc.cpp headers/pc.hpp
+pc.o : src/pc.cpp src/headers/pc.hpp
 	$(CC) $(CFLAGS) -c src/pc.cpp
 
 clean:

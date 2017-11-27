@@ -5,7 +5,7 @@
 #include <fstream>
 #include "headers/error_check.hpp"
 #include <bitset>
-#include <cinttype>
+#include <cinttypes>
 
 
 int32_t mother(memory &mem, registers &CPUreg, program_counter &PC);
