@@ -5,6 +5,7 @@
 #include <fstream>
 #include "headers/error_check.hpp"
 #include <bitset>
+#include <cinttype>
 
 
 int32_t mother(memory &mem, registers &CPUreg, program_counter &PC);
@@ -139,12 +140,13 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
         case 0x0D: CPUreg.reg[rs] = CPUreg.reg[rt] | IMM; return 0; // ori
         case 0x0F: mem.store_word(CPUreg.reg[rt], (IMM << 16)); return 0; // lui
         case 0x14: CPUreg.reg[rt] = CPUreg.reg[rs] ^ IMM; // xori
-        case 0x23: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = mem.load_word(CPUreg.reg[rs]); return 0; // lw
+        case 0x23: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)mem.load_word(CPUreg.reg[rs]); return 0; // lw
         case 0x24: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_byte(CPUreg.reg[rs])); return 0; // lbu
         case 0x25: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_hword(CPUreg.reg[rs])); return 0; // lhu
         case 0x28: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(CPUreg.reg[rs])) {return -1;} mem.store_byte(CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sb
         case 0x29: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(CPUreg.reg[rs])) {return -1;} mem.store_hword(CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sh
         case 0x30: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(CPUreg.reg[rs])) {return -1;} mem.store_word(CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
+        case 0x22: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(CPUreg.reg[rs])) (unsigned)mem.load_word_left(CPUreg.reg[rs]); return 0;// lwl
         default: return -12;
     }
 }
@@ -216,6 +218,8 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
             case 0x06    : CPUreg.reg[rs] = CPUreg.reg[rt]>>CPUreg.reg[rd]; return 0; // srlv
             case 0x03    : CPUreg.reg[rs] = CPUreg.reg[rt]>>1; return 0; // sra
             case 0x07    : CPUreg.reg[rs] = CPUreg.reg[rt]>>CPUreg.reg[rd]; return 0;// srav
+            case 0x11    : CPUreg.hi = CPUreg.reg[rt]; // mthi
+            case 0x13    : CPUreg.lo = CPUreg.reg[rt]; // mtlo
             case 0x08    : if (invalid_instruction(CPUreg.reg[rt])) {return -12;} PC.load_PC(CPUreg.reg[rt]); return 0; //jr
             case 0x09    : if (RW_error(CPUreg.reg[rt])) {return -11;} CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rt]); return 0; //jalr
             default: return -12;
