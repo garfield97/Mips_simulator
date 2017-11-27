@@ -1,6 +1,7 @@
 #include <climits>
 #include <iostream>
 #include <cinttypes>
+#include <cmath>
 
 #define MEM_SIZE 0x40000000
 #define NULL_START 0x00000000
@@ -48,12 +49,13 @@ bool addition_exception(uint32_t op1, uint32_t op2) // Error code -10
 }
 
 
-/*bool subtraction_exception(uint32_t op1, uint32_t op2)
+bool subtraction_exception(uint32_t op1, uint32_t op2)
 {
-    int result = op1 - op2;
+    long long tmp = op1;
 
-
-}*/
+    if (abs(tmp) >abs((INT_MAX + op2)) return true;
+    return false;
+}
 
 
 bool division_error(uint32_t op1, uint32_t op2) // Not an exception but yields unpredictable result
