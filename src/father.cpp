@@ -241,6 +241,35 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
 
 
 
+uint32_t arithmetic_shift_right(uint32_t input,uint32_t shift_size){
+
+    uint32_t temp,sign_extend_size;
+    temp=input;
+    temp=temp>>31;
+    
+    sign_extend_size=4294967296;
+    
+    if(temp==1){
+        
+        for(int i=0;i<shift_size;i++){
+            input=input>>1;
+            input=input+sign_extend_size;  
+        }        
+    }
+    if(temp==0){
+        input=input>>shift_size;
+    
+    }
+}
+
+
+
+
+uint32_t arithmetic_shift_left(uint32_t input,uint32_t shift_size){
+    
+    input=input<<shift_size;
+    
+}
 
 
 
