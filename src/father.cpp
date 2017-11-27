@@ -15,6 +15,7 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32
 int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
 int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction);
 uint32_t sign_extend(uint32_t in);
+uint32_t arithmetic_shift_right(uint32_t input,uint32_t shift_size)
 
 
 int main(int argc, char **argv)
@@ -219,8 +220,8 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
             case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rt]<<(CPUreg.reg[rs]&0x3F); return 0; // sllv
             case 0x02    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; return 0; // srl
             case 0x06    : CPUreg.reg[rd] = CPUreg.reg[rt]>>(CPUreg.reg[rs]&0x3F); return 0; // srlv
-            case 0x03    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; return 0; // sra
-            case 0x07    : CPUreg.reg[rd] = CPUreg.reg[rt]>>(CPUreg.reg[rs]&0x3F); return 0;// srav
+            case 0x03    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], shift_size); return 0; // sra
+            case 0x07    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], CPUreg.reg[rs]&0x3F); return 0;// srav
             case 0x11    : CPUreg.hi = CPUreg.reg[rd]; // mthi
             case 0x13    : CPUreg.lo = CPUreg.reg[rd]; // mtlo
             case 0x08    : if (invalid_instruction(CPUreg.reg[rs])) {return -12;} PC.load_PC(CPUreg.reg[rs]); return 0; //jr
@@ -243,34 +244,28 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
 
 uint32_t arithmetic_shift_right(uint32_t input,uint32_t shift_size){
 
-    uint32_t temp,sign_extend_size;
+    uint32_t temp;
     temp=input;
     temp=temp>>31;
     
-    sign_extend_size=4294967296;
+    long sign_extend_size=4294967296;
     
     if(temp==1){
         
-        for(int i=0;i<shift_size;i++){
+        for(int i=0;i<shift_size;i++)
+        {
             input=input>>1;
             input=input+sign_extend_size;  
         }        
     }
-    if(temp==0){
+    if(temp==0)
+    {
         input=input>>shift_size;
     
     }
+
+    return input;
 }
-
-
-
-
-uint32_t arithmetic_shift_left(uint32_t input,uint32_t shift_size){
-    
-    input=input<<shift_size;
-    
-}
-
 
 
 
