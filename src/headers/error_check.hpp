@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cinttypes>
 #include <cstdlib>
+#include <exception>
 
 #define MEM_SIZE 0x40000000
 #define NULL_START 0x00000000
@@ -14,14 +15,6 @@
 #define GET_C_END 0xC000001
 #define PUT_C_START 0xC000001
 #define PUT_C_END 0xC000002
-
-bool RW_error(uint32_t access_addr) // Error code -11
-{
-    access_addr /= 4;
-
-    if (access_addr < RW_START || access_addr >= RW_END) return true;
-    return false;
-}
 
 
 bool mem_range_error(uint32_t access_addr) // Error code -11
@@ -44,22 +37,31 @@ bool invalid_instruction(uint32_t access_addr) // Error code -12
 
 bool addition_exception(uint32_t op1, uint32_t op2) // Error code -10
 {
-    if (op1 > INT_MAX - op2) return true;
+    try 
+    {
+        uint32_t res = op1 + op2;
+    }
+    
+    catch (const std::overflow_error &a)
+    {
+        return true;
+    }
     return false;
 }
 
 
 bool subtraction_exception(uint32_t op1, uint32_t op2)
 {
-    long long tmp = op1;
-    uint32_t comp1, comp2;
+    try 
+    {
+        uint32_t res = op1 - op2;
+    }
 
-    comp1 = tmp;
-    comp2 = INT_MAX + op2;
-
-    if (comp1 > comp2) return true;
-    return false;
-    
+    catch (const std::underflow_error &a)
+    {
+        return true;
+    }
+    return false;   
 }
 
 

@@ -6,6 +6,7 @@
 #include "headers/error_check.hpp"
 #include <bitset>
 #include <cinttypes>
+#include <exception>
 
 
 int32_t mother(memory &mem, registers &CPUreg, program_counter &PC);
@@ -110,6 +111,8 @@ int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_
 
 int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
 {
+    try
+    {
     const unsigned short rs = (instruction >> 21) & 0b11111;
     const unsigned short rt = (instruction >> 16) & 0b11111;
     uint32_t IMM = instruction & 0XFFFF;
@@ -141,23 +144,31 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
         case 0x0D: CPUreg.reg[rs] = CPUreg.reg[rt] | IMM; return 0; // ori
         case 0x0F: mem.store_word(CPUreg.reg[rt], (IMM << 16)); return 0; // lui
         case 0x14: CPUreg.reg[rt] = CPUreg.reg[rs] ^ IMM; // xori
-        case 0x23: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = mem.load_word(IMM + CPUreg.reg[rs]); return 0; // lw
-        case 0x24: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lbu
-        case 0x25: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (unsigned)(mem.load_hword(IMM + CPUreg.reg[rs])); return 0; // lhu
-        case 0x28: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM + CPUreg.reg[rs])) {return -1;} mem.store_byte(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sb
-        case 0x29: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM + CPUreg.reg[rs])) {return -1;} mem.store_hword(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sh
-        case 0x30: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM + CPUreg.reg[rs])) {return -1;} mem.store_word(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
-        case 0x22: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM + CPUreg.reg[rs])) CPUreg.reg[rt] = mem.load_word_left(IMM + CPUreg.reg[rs]); return 0;// lwl
-        case 0x26: if (RW_error(CPUreg.reg[rs])) {return -11;} if (write_to_zero(IMM + CPUreg.reg[rs])) CPUreg.reg[rt] = mem.load_word_right(IMM + CPUreg.reg[rs]); return 0;// lwr
-        case 0x20: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lb
-        case 0x21: if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[rt] = (mem.load_hword(IMM + CPUreg.reg[rs])); return 0; // lh
+        case 0x23: CPUreg.reg[rt] = mem.load_word(IMM + CPUreg.reg[rs]); return 0; // lw
+        case 0x24: CPUreg.reg[rt] = (unsigned)(mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lbu
+        case 0x25: CPUreg.reg[rt] = (unsigned)(mem.load_hword(IMM + CPUreg.reg[rs])); return 0; // lhu
+        case 0x28: if (write_to_zero(IMM + CPUreg.reg[rs])) {return -1;} mem.store_byte(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sb
+        case 0x29: if (write_to_zero(IMM + CPUreg.reg[rs])) {return -1;} mem.store_hword(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sh
+        case 0x30: if (write_to_zero(IMM + CPUreg.reg[rs])) {return -1;} mem.store_word(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
+        case 0x22: if (write_to_zero(IMM + CPUreg.reg[rs])) CPUreg.reg[rt] = mem.load_word_left(IMM + CPUreg.reg[rs]); return 0;// lwl
+        case 0x26: if (write_to_zero(IMM + CPUreg.reg[rs])) CPUreg.reg[rt] = mem.load_word_right(IMM + CPUreg.reg[rs]); return 0;// lwr
+        case 0x20: CPUreg.reg[rt] = (mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lb
+        case 0x21: CPUreg.reg[rt] = (mem.load_hword(IMM + CPUreg.reg[rs])); return 0; // lh
         default: return -12;
+    }
+    }
+
+    catch (const std::system_error &a)
+    {
+        return -20;
     }
 }
 
 
 int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction)
 {
+    try 
+    {
     uint32_t address = instruction & 0x3FFFFC;
     const unsigned short type = instruction >> 26;
     uint32_t tmp = PC.get_PC();
@@ -177,11 +188,18 @@ int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32
         	PC.load_PC(address);
         	return 0;
     }
+    }
+
+    catch(const std::system_error &a)
+    {
+        return -20;
+    }
 }
 
 
 int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction)
 {
+    try {
     const unsigned short rs = (instruction >> 21) & 0b11111;
     const unsigned short rt = (instruction >> 16) & 0b11111;
     const unsigned short rd = (instruction >> 11) & 0b11111;
@@ -225,21 +243,16 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
             case 0x11    : CPUreg.hi = CPUreg.reg[rd]; // mthi
             case 0x13    : CPUreg.lo = CPUreg.reg[rd]; // mtlo
             case 0x08    : if (invalid_instruction(CPUreg.reg[rs])) {return -12;} PC.load_PC(CPUreg.reg[rs]); return 0; //jr
-            case 0x09    : if (RW_error(CPUreg.reg[rs])) {return -11;} CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rs]); return 0; //jalr
+            case 0x09    : CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rs]); return 0; //jalr
             default: return -12;
     }
+    }
+
+    catch (const std::system_error &a)
+    {
+        return -20;
+    }
 }
-
-
-/*uint32_t sign_extend(uint32_t in)
-{
-    int sign = in >> 15;
-    
-    if (sign == 1) return (in + 0xFFFF0000);
-    return in;
-}
-*/
-
 
 
 uint32_t arithmetic_shift_right(uint32_t input,uint32_t shift_size){
