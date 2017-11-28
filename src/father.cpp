@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
     while (result == 0)
     {
-        std::cout<<"round "<<i<<std::endl;
+        std::cout<<"instruction "<<i<<std::endl;
         result = mother(mem, CPUreg, PC);
         CPUreg.reg[0] = 0;
         PC.increment();
