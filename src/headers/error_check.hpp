@@ -95,7 +95,7 @@ bool invalid_opcode(uint32_t opcode){
     }
 }
 
-bool write_to_zero(int32_t access_addr)
+bool write_to_zero(uint32_t access_addr)
 {
     if (access_addr == 0) return true;
 
@@ -107,10 +107,14 @@ bool write_to_zero(int32_t access_addr)
 }
 
 
-//error codes
+bool access_zero(uint32_t access_addr)
+{
+    uint32_t loc = access_addr/4;
 
-//bool internal_error(
-//invalid opcode
+    if (loc == 0)
+    {
+        return true;
+    }
 
-
-//bool io_error(
+    return false;
+}
