@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 
     switch (result)
     {
-        case -1: std::cout<<result<<" Schmei"<<std::endl; break;// Program completed successfully
+        case -1: std::cout<<result<<" Execution complete"<<std::endl; break;// Program completed successfully
         case -12: std::cout<<result<<" Invalid instruction"<<std::endl; break;// Invalid instruction
         case -11: std::cout<<result<<" Invalid address"<<std::endl; break;// Memory exception
         case -10: std::cout<<result<<" Arithmetic exception"<<std::endl; break;// Arithmetic exception
