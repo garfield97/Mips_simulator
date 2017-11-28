@@ -133,9 +133,9 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
                     else if (CPUreg.reg[rt] == 0x10) {if (CPUreg.reg[rs] < 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;}return 0;} //bltzal
                     return -12;
         case 0x07: if (mem_range_error(IMM)) {return -11;}
-                    if (CPUreg.reg[rs] > 0) {PC.load_PC(IMM);} if (access_zero(IMM) == true) {return -1;}return 0; // bgtz
+                    if (CPUreg.reg[rs] > 0) {PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;}return 0; // bgtz
         case 0x06: if (mem_range_error(IMM)) {return -11;} 
-                    if (CPUreg.reg[rs] <= 0) {PC.load_PC(IMM);} if (access_zero(IMM) == true) {return -1;}return 0; // blez
+                    if (CPUreg.reg[rs] <= 0) {PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;}return 0; // blez
         case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {return -10;} CPUreg.reg[rs] = CPUreg.reg[rt] + IMM; return 0; //addi
         case 0x09: CPUreg.reg[rs] = (unsigned)(CPUreg.reg[rt]) + (unsigned)(IMM); return 0; // addiu
         case 0x0A: if (CPUreg.reg[rs] < IMM) CPUreg.reg[rt] = 1; return 0; // slti
