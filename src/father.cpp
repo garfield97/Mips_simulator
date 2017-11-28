@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 
 int32_t mother(memory &mem, registers &CPUreg, program_counter &PC)
 {
-     uint32_t instruction = mem.get_instruction(PC.get_PC()); // Retrieve instruction from memory
+    uint32_t instruction = mem.get_instruction(PC.get_PC()); // Retrieve instruction from memory
 
     return (decode(mem, CPUreg, PC, instruction)); // Decode and execute
 }
@@ -124,13 +124,13 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
 
     switch (opcode)
     {
-        case 0x04: if (mem_range_error(IMM)) {return -11;} if (CPUreg.reg[rs] == CPUreg.reg[rt]) {PC.load_PC(IMM);} if (access_zero(IMM) == true) {return -1;} return 0; return 0; // beq
-        case 0x05: if (mem_range_error(IMM)) {return -11;} if (CPUreg.reg[rs] != CPUreg.reg[rt]) {PC.load_PC(IMM);} return 0; // bne
+        case 0x04: if (mem_range_error(IMM)) {return -11;} if (CPUreg.reg[rs] == CPUreg.reg[rt]) {PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;} return 0; return 0; // beq
+        case 0x05: if (mem_range_error(IMM)) {return -11;} if (CPUreg.reg[rs] != CPUreg.reg[rt]) {PC.load_PC(IMM, true);} return 0; // bne
         case 0x01: if (mem_range_error(IMM)) {return -11;} 
-                    if (CPUreg.reg[rt] == 0x1) {if (CPUreg.reg[rs] >= 0) PC.load_PC(IMM); if (access_zero(IMM) == true) {return -1;}return 0;} //bgez
-                    else if (CPUreg.reg[rt] == 0b10001) {if (CPUreg.reg[rs] >= 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(IMM);} if (access_zero(IMM) == true) {return -1;}return 0;} //bgezal
-                    else if (CPUreg.reg[rt] == 0x0) {if (CPUreg.reg[rs] < 0) {PC.load_PC(IMM);} if (access_zero(IMM) == true) {return -1;}return 0;} //bltz
-                    else if (CPUreg.reg[rt] == 0x10) {if (CPUreg.reg[rs] < 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(IMM);} if (access_zero(IMM) == true) {return -1;}return 0;} //bltzal
+                    if (CPUreg.reg[rt] == 0x1) {if (CPUreg.reg[rs] >= 0) PC.load_PC(IMM, true); if (access_zero(IMM) == true) {return -1;}return 0;} //bgez
+                    else if (CPUreg.reg[rt] == 0b10001) {if (CPUreg.reg[rs] >= 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;}return 0;} //bgezal
+                    else if (CPUreg.reg[rt] == 0x0) {if (CPUreg.reg[rs] < 0) {PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;}return 0;} //bltz
+                    else if (CPUreg.reg[rt] == 0x10) {if (CPUreg.reg[rs] < 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;}return 0;} //bltzal
                     return -12;
         case 0x07: if (mem_range_error(IMM)) {return -11;}
                     if (CPUreg.reg[rs] > 0) {PC.load_PC(IMM);} if (access_zero(IMM) == true) {return -1;}return 0; // bgtz
@@ -182,11 +182,11 @@ int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32
     switch (type)
     {
         case 0x02:
-        	PC.load_PC(address); // j
+        	PC.load_PC(address, false); // j
         	return 0;
         default:
         	CPUreg.reg[31] = PC.get_PC(); // jal
-        	PC.load_PC(address);
+        	PC.load_PC(address, false);
         	return 0;
     }
     }
@@ -243,8 +243,8 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
             case 0x07    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], CPUreg.reg[rs]&0x3F); return 0;// srav
             case 0x11    : CPUreg.hi = CPUreg.reg[rd]; // mthi
             case 0x13    : CPUreg.lo = CPUreg.reg[rd]; // mtlo
-            case 0x08    : if (invalid_instruction(CPUreg.reg[rs])) {return -12;} PC.load_PC(CPUreg.reg[rs]);if (access_zero(CPUreg.reg[rs]) == true) {return -1;} return 0; //jr
-            case 0x09    : CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rs]); if (access_zero(CPUreg.reg[rs]) == true) {return -1;}return 0; //jalr
+            case 0x08    : if (invalid_instruction(CPUreg.reg[rs])) {return -12;} PC.load_PC(CPUreg.reg[rs], false);if (access_zero(CPUreg.reg[rs]) == true) {return -1;} return 0; //jr
+            case 0x09    : CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rs], false); if (access_zero(CPUreg.reg[rs]) == true) {return -1;}return 0; //jalr
             default: return -12;
     }
     }

@@ -13,15 +13,17 @@ public:
     //To increment PC
     void increment();
     //To load a new value into PC
-    void load_PC(uint32_t instr);
+    void load_PC(uint32_t instr, bool lag);
     // Getter for PC
     uint32_t get_PC() const;
+    uint32_t get_PC_prev() const;
+    bool delay;
 
 
 private:
 
     uint32_t PC;
-    
+    uint32_t PC_prev;
 };
 
 #endif
