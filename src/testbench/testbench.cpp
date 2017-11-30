@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <filesystem>
-
-namespace fs = std::filesystem;
+#include "father.cpp"
 
 
 using namespace std;
@@ -16,7 +14,6 @@ int main()
   fstream csv_out;
   ofstream tst_in;
   int test_size;
-  string in_base = "tst";
   string in_name;
   string author_name;
   bool pass = false;
@@ -37,11 +34,11 @@ int main()
 
   for (int i = 0; i < test_size; i++)
   {
-    in_name = in_base + (char)i + ".bin";
+    cout<<"Enter the name of file "<<i<<":";
 
     tst_in.open(in_name.c_str());
 
-    // Do testing and get result
+    main(in_name);
 
     write_csv(csv_out, i, inst, pass, author_name, message); //Print result in csv file and move on to next test
 
