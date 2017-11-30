@@ -3,7 +3,7 @@
 
 
 program_counter::program_counter()
-: PC(4), PC_prev(8), delay(false) {}
+: delay(false), PC(4), PC_prev(8) {}
 
 
 uint32_t program_counter::get_PC() const
@@ -24,13 +24,11 @@ void program_counter::increment()
     {
         PC = PC_prev;
         PC_prev += 4;
+        return;
     }
 
-    else
-    {
         PC += 4;
         delay = false;
-    }
 }
 
 
