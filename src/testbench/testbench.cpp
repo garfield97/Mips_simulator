@@ -38,7 +38,8 @@ int main()
 
     tst_in.open(in_name.c_str());
 
-    main(in_name);
+    if (father(in_name) == 0) pass = true;
+    else pass = false;
 
     write_csv(csv_out, i, inst, pass, author_name, message); //Print result in csv file and move on to next test
 

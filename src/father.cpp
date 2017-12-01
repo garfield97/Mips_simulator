@@ -19,7 +19,7 @@ uint32_t sign_extend(uint32_t in);
 uint32_t arithmetic_shift_right(uint32_t input,uint32_t shift_size);
 
 
-int father(int argc, char **argv)
+int main(int argc, char **argv)
 {
     memory mem;
     registers CPUreg;
