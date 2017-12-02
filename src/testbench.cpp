@@ -26,9 +26,13 @@ int main()
   cout<<"Enter author name:"<<endl;
   cin>>author_name;
 
-  csv_out.open("results.csv");
+  csv_out.open("results.csv", ios::app);
 
-  if (!csv_out.is_open()) cout<<"Cannot open output file"<<endl; exit(EXIT_FAILURE);
+  if (!(csv_out.is_open())) 
+  {
+    cout<<"Cannot open output file"<<endl; 
+    exit(EXIT_FAILURE);
+  }
 
   csv_out<<"TestId , Instruction , Status , Author [, Message]"<<endl;
 
