@@ -24,7 +24,6 @@ int father(std::string in_name)
     registers CPUreg;
     program_counter PC;
     int result = 0;
-    int i = 0;
 
     std::string filename = in_name;
 
@@ -41,10 +40,8 @@ int father(std::string in_name)
     while (result == 0)
     {
         PC.increment();
-        std::cout<<"instruction "<<i<<std::endl;
         result = mother(mem, CPUreg, PC);
         CPUreg.reg[0] = 0;
-        i++;
     }
 
     switch (result)

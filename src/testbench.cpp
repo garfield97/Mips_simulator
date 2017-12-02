@@ -12,13 +12,13 @@ void write_csv(fstream &outfile, int id, string instruction, bool status, string
 int main()
 {
   fstream csv_out;
-  ofstream tst_in;
   int test_size;
   string in_name;
   string author_name;
   bool pass = false;
   string inst;
   string message;
+  int result = 0;
 
   cout<<"Enter the number of test files:"<<endl;
   cin>>test_size;
@@ -37,12 +37,12 @@ int main()
     cout<<"Enter the name of file "<<i<<":";
     cin>>in_name;
 
-    if (father(in_name) == 0) pass = true;
+    result = father(in_name);
+
+    if (result == 0) pass = true;
     else pass = false;
 
     write_csv(csv_out, i, inst, pass, author_name, message); //Print result in csv file and move on to next test
-
-    tst_in.close();
   }
 
   csv_out.close();
