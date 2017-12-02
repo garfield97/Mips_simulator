@@ -3,7 +3,7 @@
 
 
 program_counter::program_counter()
-: PC(0) {}
+: delay(false), PC(0), PC_prev(4) {}
 
 
 uint32_t program_counter::get_PC() const
@@ -12,13 +12,28 @@ uint32_t program_counter::get_PC() const
 }
 
 
-void program_counter::increment()
+uint32_t program_counter::get_PC_prev() const 
 {
-    PC += 4;
+    return PC_prev;
 }
 
 
-void program_counter::load_PC(uint32_t instr)
+void program_counter::increment()
 {
-	PC  = instr;
+    if (delay == false)
+    {
+        PC = PC_prev;
+        PC_prev += 4;
+        return;
+    }
+
+        PC += 4;
+        delay = false;
+}
+
+
+void program_counter::load_PC(uint32_t instr, bool lag)
+{
+    PC_prev = instr;
+    delay = lag;
 }

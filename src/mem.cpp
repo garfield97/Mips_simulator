@@ -163,10 +163,10 @@ uint32_t memory::load_word_left(uint32_t loc)
 
     switch (tmp)
     {
-        case 0: res = (mem[loc-1] << 8) + (mem[loc] >> 24); return res;
-        case 1: res = (mem[loc-1] << 16) + (mem[loc] >> 16); return res;
-        case 2: res = (mem[loc-1] << 24) + (mem[loc] >> 8); return res;
-        default: res = mem[loc]; return res;
+        case 0: res = (mem[loc-1] & 0xFFFF)<<16; return res;
+        case 1: res = ((mem[loc-1]& 0xFF)<<8) + ((mem[loc]>>8) & 0x00FF0000); return res;
+        case 2: res = ((mem[loc] & 0xFFFF0000)); return res;
+        default: res = ((mem[loc] << 8) & 0xFFFF0000); return res;
     }
 
 }
@@ -187,10 +187,10 @@ uint32_t memory::load_word_right(uint32_t loc)
 
     switch (tmp)
     {
-        case 0: res = mem[loc]; return res;
-        case 1: res = (mem[loc] << 8) + (mem[loc+1] >> 24); return res;
-        case 2: res = (mem[loc] << 16) + (mem[loc+1] >> 16); return res;
-        default: res = (mem[loc] << 24) + (mem[loc+1] >> 8); return res;
+        case 0: res = mem[loc]>>16; return res;
+        case 1: res = (mem[loc]>>16) & 0xFFFF; return res;
+        case 2: res = (mem[loc]>>8) & 0xFFFF; return res;
+        default: res = ((mem[loc]<<8) & 0xFF00) + ((mem[loc+1]>>24) & 0xFF);return res;
     }
 
 }
