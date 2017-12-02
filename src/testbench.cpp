@@ -28,7 +28,7 @@ int main()
 
   csv_out.open("results.csv");
 
-  //if (!csv_out.is_open()) cout<<"Cannot open output file<<endl"<<endl; exit(EXIT_FAILURE);
+  if (!csv_out.is_open()) cout<<"Cannot open output file"<<endl; exit(EXIT_FAILURE);
 
   csv_out<<"TestId , Instruction , Status , Author [, Message]"<<endl;
 
