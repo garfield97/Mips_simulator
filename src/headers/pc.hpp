@@ -17,11 +17,10 @@ public:
     // Getter for PC
     uint32_t get_PC() const;
     uint32_t get_PC_prev() const;
+
+
+private: 
     bool delay;
-
-
-private:
-
     uint32_t PC;
     uint32_t PC_prev;
 };
