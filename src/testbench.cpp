@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "father.cpp"
+#include "father.hpp"
 
 
 using namespace std;
@@ -28,15 +28,14 @@ int main()
 
   csv_out.open("results.csv");
 
-  if (!csv_out.is_open()) cout<<"Cannot open output file<<endl"<<endl; exit(EXIT_FAILURE);
+  //if (!csv_out.is_open()) cout<<"Cannot open output file<<endl"<<endl; exit(EXIT_FAILURE);
 
   csv_out<<"TestId , Instruction , Status , Author [, Message]"<<endl;
 
   for (int i = 0; i < test_size; i++)
   {
     cout<<"Enter the name of file "<<i<<":";
-
-    tst_in.open(in_name.c_str());
+    cin>>in_name;
 
     if (father(in_name) == 0) pass = true;
     else pass = false;

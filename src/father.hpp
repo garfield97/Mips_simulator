@@ -18,7 +18,7 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
 uint32_t arithmetic_shift_right(uint32_t input,uint32_t shift_size);
 
 
-int main(int argc, char **argv)
+int father(std::string in_name)
 {
     memory mem;
     registers CPUreg;
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     int result = 0;
     int i = 0;
 
-    std::string filename = argv[1];
+    std::string filename = in_name;
 
     std::fstream infile;
 
