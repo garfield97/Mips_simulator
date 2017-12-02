@@ -4,7 +4,7 @@
 #include "headers/pc.hpp"
 #include <fstream>
 #include "headers/error_check.hpp"
-#include <bitset>
+//#include <bitset>
 #include <cinttypes>
 #include <exception>
 
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
         case -12: std::cout<<result<<" Invalid instruction"<<std::endl; break;// Invalid instruction
         case -11: std::cout<<result<<" Invalid address"<<std::endl; break;// Memory exception
         case -10: std::cout<<result<<" Arithmetic exception"<<std::endl; break;// Arithmetic exception
-        case -20: std::cout<<result<<" Internal error"<<std::endl; break;
+        case -20: std::cout<<result<<" Internal error"<<std::endl; break;// Unkown error
         default: std::cout<< result<<" Other error"<<std::endl; break;// Any other errors?
     }
 
@@ -243,8 +243,8 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
             case 0x07    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], CPUreg.reg[rs]&0x3F); return 0;// srav
             case 0x11    : CPUreg.hi = CPUreg.reg[rd]; // mthi
             case 0x13    : CPUreg.lo = CPUreg.reg[rd]; // mtlo
-            case 0x08    : if (invalid_instruction(CPUreg.reg[rs])) {return -12;} PC.load_PC(CPUreg.reg[rs], false);if (access_zero(CPUreg.reg[rs]) == true) {return -1;} return 0; //jr
-            case 0x09    : CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rs], false); if (access_zero(CPUreg.reg[rs]) == true) {return -1;}return 0; //jalr
+            case 0x08    : if (invalid_instruction(CPUreg.reg[rs])) {return -12;} PC.load_PC(CPUreg.reg[rs], true);if (access_zero(CPUreg.reg[rs]) == true) {return -1;} return 0; //jr
+            case 0x09    : CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rs], true); if (access_zero(CPUreg.reg[rs]) == true) {return -1;}return 0; //jalr
             default: return -12;
     }
     }
