@@ -15,7 +15,6 @@ int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const  uint32
 int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
 int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
 int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction);
-uint32_t sign_extend(uint32_t in);
 uint32_t arithmetic_shift_right(uint32_t input,uint32_t shift_size);
 
 
@@ -41,10 +40,10 @@ int main(int argc, char **argv)
 
     while (result == 0)
     {
+        PC.increment();
         std::cout<<"instruction "<<i<<std::endl;
         result = mother(mem, CPUreg, PC);
         CPUreg.reg[0] = 0;
-        PC.increment();
         i++;
     }
 
@@ -183,11 +182,11 @@ int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32
     switch (type)
     {
         case 0x02:
-        	PC.load_PC(address, false); // j
+        	PC.load_PC(address, true); // j
         	return 0;
         default:
         	CPUreg.reg[31] = PC.get_PC(); // jal
-        	PC.load_PC(address, false);
+        	PC.load_PC(address, true);
         	return 0;
     }
     }
