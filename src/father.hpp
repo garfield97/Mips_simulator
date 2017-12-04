@@ -4,7 +4,6 @@
 #include "headers/pc.hpp"
 #include <fstream>
 #include "headers/error_check.hpp"
-//#include <bitset>
 #include <cinttypes>
 #include <exception>
 
@@ -39,9 +38,9 @@ int father(std::string in_name)
 
     while (result == 0)
     {
-        PC.increment();
         result = mother(mem, CPUreg, PC);
         CPUreg.reg[0] = 0;
+        PC.increment();
     }
 
     switch (result)
@@ -101,7 +100,7 @@ int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_
         case 0b000000: return (r_type(CPUreg, PC, instruction));// R - Type
         case 0b000010: return (j_type(mem, CPUreg, PC, instruction));// J - Type
         case 0b000011: return (j_type(mem, CPUreg, PC, instruction));// J - Type
-        default: if (invalid_opcode(opcode)) {return -12;} return (i_type(mem, CPUreg, PC, instruction)); // I - Type
+        default: return (i_type(mem, CPUreg, PC, instruction)); // I - Type
     }
 }
 
@@ -116,8 +115,6 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
     const unsigned short opcode = instruction >> 26;
 
     //IMM = sign_extend(IMM);
-
-    if (rs > 31 || rt > 31) return -11;
 
     switch (opcode)
     {
@@ -181,10 +178,11 @@ int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32
         case 0x02:
         	PC.load_PC(address, true); // j
         	return 0;
-        default:
+        case 0x03:
         	CPUreg.reg[31] = PC.get_PC(); // jal
         	PC.load_PC(address, true);
         	return 0;
+        default: return -12;
     }
     }
 
@@ -206,7 +204,6 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
 
     unsigned long long temp = 0;
 
-    if (rs > 31 || rt > 31) return -11;
 
     switch (funct)
     {

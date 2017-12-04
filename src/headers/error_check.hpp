@@ -72,29 +72,6 @@ bool division_error(uint32_t op1, uint32_t op2) // Not an exception but yields u
 }
 
 
-bool invalid_opcode(uint32_t opcode){
-
-    switch(opcode){
-
-        case 0x04: return false; break;
-        case 0x05: return false; break;
-        case 0x08: return false; break;
-        case 0x09: return false; break;
-        case 0x0A: return false;break;
-        case 0x0B: return false;break;
-        case 0x0C: return false;break;
-        case 0x0D: return false;break;
-        case 0x0F: return false;break;
-        case 0x23: return false;break;
-        case 0x24: return false;break;
-        case 0x25: return false;break;
-        case 0x28: return false;break;
-        case 0x29: return false; break;
-        case 0x30: return false; break;
-        default  : return true;break;
-    }
-}
-
 bool write_to_zero(uint32_t access_addr)
 {
     if (access_addr == 0) return true;
