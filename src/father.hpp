@@ -71,7 +71,7 @@ int32_t read_file(memory &mem, std::fstream &infile)
 {
     char c;
     uint32_t t = 0;
-    unsigned long count = 0;
+    uint32_t count = 0;
 
     while (!infile.eof())
     {
