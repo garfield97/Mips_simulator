@@ -8,7 +8,7 @@
 #include <exception>
 
 
-int32_t mother(memory &mem, registers &CPUreg, program_counter &PC, std::string &instr_type);
+int32_t mother(memory &mem, registers &CPUreg, program_counter &PC, std::string &instr_type, uint32_t &binary);
 int32_t read_file(memory &mem, std::fstream &infile);
 int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const  uint32_t instruction, std::string &instr_type);
 int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction, std::string &instr_type);
@@ -17,15 +17,14 @@ int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instructio
 uint32_t arithmetic_shift_right(uint32_t input,uint32_t shift_size);
 
 
-int main(int argc, char **argv)
+int simulator(std::string file_name, std::string &instr_type, uint32_t &binary)
 {
     memory mem;
     registers CPUreg;
     program_counter PC;
     int result = 0;
-    std::string instr_type;
 
-    std::string filename = argv[1];
+    std::string filename = file_name;
 
     std::fstream infile;
 
@@ -39,7 +38,7 @@ int main(int argc, char **argv)
 
     while (result == 0)
     {
-        result = mother(mem, CPUreg, PC, instr_type);
+        result = mother(mem, CPUreg, PC, instr_type, binary);
         CPUreg.reg[0] = 0;
         PC.increment();
     }
@@ -59,9 +58,10 @@ int main(int argc, char **argv)
 }
 
 
-int32_t mother(memory &mem, registers &CPUreg, program_counter &PC, std::string &instr_type)
+int32_t mother(memory &mem, registers &CPUreg, program_counter &PC, std::string &instr_type, uint32_t &binary)
 {
     uint32_t instruction = mem.get_instruction(PC.get_PC()); // Retrieve instruction from memory
+    binary = instruction;
 
     return (decode(mem, CPUreg, PC, instruction, instr_type)); // Decode and execute
 }
