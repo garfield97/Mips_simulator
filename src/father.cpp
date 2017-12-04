@@ -8,23 +8,24 @@
 #include <exception>
 
 
-int32_t mother(memory &mem, registers &CPUreg, program_counter &PC);
+int32_t mother(memory &mem, registers &CPUreg, program_counter &PC, std::string &instr_type);
 int32_t read_file(memory &mem, std::fstream &infile);
-int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const  uint32_t instruction);
-int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
-int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
-int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction);
+int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const  uint32_t instruction, std::string &instr_type);
+int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction, std::string &instr_type);
+int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction, std::string &instr_type);
+int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction, std::string &instr_type);
 uint32_t arithmetic_shift_right(uint32_t input,uint32_t shift_size);
 
 
-int father(std::string in_name)
+int main(int argc, char **argv)
 {
     memory mem;
     registers CPUreg;
     program_counter PC;
     int result = 0;
+    std::string instr_type;
 
-    std::string filename = in_name;
+    std::string filename = argv[1];
 
     std::fstream infile;
 
@@ -38,7 +39,7 @@ int father(std::string in_name)
 
     while (result == 0)
     {
-        result = mother(mem, CPUreg, PC);
+        result = mother(mem, CPUreg, PC, instr_type);
         CPUreg.reg[0] = 0;
         PC.increment();
     }
@@ -58,11 +59,11 @@ int father(std::string in_name)
 }
 
 
-int32_t mother(memory &mem, registers &CPUreg, program_counter &PC)
+int32_t mother(memory &mem, registers &CPUreg, program_counter &PC, std::string &instr_type)
 {
     uint32_t instruction = mem.get_instruction(PC.get_PC()); // Retrieve instruction from memory
 
-    return (decode(mem, CPUreg, PC, instruction)); // Decode and execute
+    return (decode(mem, CPUreg, PC, instruction, instr_type)); // Decode and execute
 }
 
 
@@ -91,21 +92,21 @@ int32_t read_file(memory &mem, std::fstream &infile)
 }
 
 
-int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_t instruction)
+int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_t instruction, std::string &instr_type)
 {
     uint32_t opcode = instruction >> 26;
 
     switch (opcode)
     {
-        case 0b000000: return (r_type(CPUreg, PC, instruction));// R - Type
-        case 0b000010: return (j_type(mem, CPUreg, PC, instruction));// J - Type
-        case 0b000011: return (j_type(mem, CPUreg, PC, instruction));// J - Type
-        default: return (i_type(mem, CPUreg, PC, instruction)); // I - Type
+        case 0b000000: return (r_type(CPUreg, PC, instruction, instr_type));// R - Type
+        case 0b000010: return (j_type(mem, CPUreg, PC, instruction, instr_type));// J - Type
+        case 0b000011: return (j_type(mem, CPUreg, PC, instruction, instr_type));// J - Type
+        default: return (i_type(mem, CPUreg, PC, instruction, instr_type)); // I - Type
     }
 }
 
 
-int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
+int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction, std::string &instr_type)
 {
     try
     {
@@ -118,18 +119,18 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
 
     switch (opcode)
     {
-        case 0x04: if (mem_range_error(IMM)) {return -11;} if (CPUreg.reg[rs] == CPUreg.reg[rt]) {PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;} return 0; return 0; // beq
-        case 0x05: if (mem_range_error(IMM)) {return -11;} if (CPUreg.reg[rs] != CPUreg.reg[rt]) {PC.load_PC(IMM, true);} return 0; // bne
-        case 0x01: if (mem_range_error(IMM)) {return -11;} 
-                    if (CPUreg.reg[rt] == 0x1) {if (CPUreg.reg[rs] >= 0) PC.load_PC(IMM, true); if (access_zero(IMM) == true) {return -1;}return 0;} //bgez
-                    else if (CPUreg.reg[rt] == 0b10001) {if (CPUreg.reg[rs] >= 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;}return 0;} //bgezal
-                    else if (CPUreg.reg[rt] == 0x0) {if (CPUreg.reg[rs] < 0) {PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;}return 0;} //bltz
-                    else if (CPUreg.reg[rt] == 0x10) {if (CPUreg.reg[rs] < 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;}return 0;} //bltzal
+        case 0x04: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {return -11;} if (CPUreg.reg[rs] == CPUreg.reg[rt]) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} if (access_zero(IMM) == true) {return -1;} return 0; // beq
+        case 0x05: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {return -11;} if (CPUreg.reg[rs] != CPUreg.reg[rt]) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // bne
+        case 0x01: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {return -11;} 
+                    if (CPUreg.reg[rt] == 0x1) {if (CPUreg.reg[rs] >= 0) PC.load_PC(PC.get_PC()+4+(IMM<<2), true); return 0;} //bgez
+                    else if (CPUreg.reg[rt] == 0b10001) {if (CPUreg.reg[rs] >= 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} if (access_zero(IMM) == true) {return -1;}return 0;} //bgezal
+                    else if (CPUreg.reg[rt] == 0x0) {if (CPUreg.reg[rs] < 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0;} //bltz
+                    else if (CPUreg.reg[rt] == 0x10) {if (CPUreg.reg[rs] < 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0;} //bltzal
                     return -12;
-        case 0x07: if (mem_range_error(IMM)) {return -11;}
-                    if (CPUreg.reg[rs] > 0) {PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;}return 0; // bgtz
-        case 0x06: if (mem_range_error(IMM)) {return -11;} 
-                    if (CPUreg.reg[rs] <= 0) {PC.load_PC(IMM, true);} if (access_zero(IMM) == true) {return -1;}return 0; // blez
+        case 0x07: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {return -11;}
+                    if (CPUreg.reg[rs] > 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // bgtz
+        case 0x06: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {return -11;} 
+                    if (CPUreg.reg[rs] <= 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // blez
         case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {return -10;} CPUreg.reg[rs] = CPUreg.reg[rt] + IMM; return 0; //addi
         case 0x09: CPUreg.reg[rs] = (unsigned)(CPUreg.reg[rt]) + (unsigned)(IMM); return 0; // addiu
         case 0x0A: if (CPUreg.reg[rs] < IMM) CPUreg.reg[rt] = 1; return 0; // slti
@@ -159,16 +160,17 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
 }
 
 
-int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction)
+int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction, std::string &instr_type)
 {
     try 
     {
     uint32_t address = instruction & 0x3FFFFC;
     const unsigned short type = instruction >> 26;
-    uint32_t tmp = PC.get_PC();
+    uint32_t tmp = PC.get_PC()+4;
 
     address = address << 2;
-    address += (tmp & 0xF000);
+    tmp = tmp & 0xF0000000;
+    address += tmp;
 
     if (mem_range_error(address)) return -11;
     if (access_zero(address) == true) {return -1;}
@@ -193,7 +195,7 @@ int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32
 }
 
 
-int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction)
+int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction, std::string &instr_type)
 {
     try {
     const unsigned short rs = (instruction >> 21) & 0b11111;
