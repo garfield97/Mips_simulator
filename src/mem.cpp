@@ -1,5 +1,6 @@
 #include "headers/mem.hpp"
 #include <bitset>
+#include <cstdio>
 
 #define MEM_SIZE 0x40000000
 #define NULL_START 0x00000000
@@ -127,7 +128,7 @@ void memory::store_hword(uint32_t loc, const int32_t input)
 
 uint32_t memory::get_c(uint32_t loc_corrected)
 {
-    volatile int8_t *GETC=(volatile int8_t *)GET_C_START;
+    /*volatile int8_t *GETC=(volatile int8_t *)GET_C_START;
 
     int8_t c = *GETC;
 
@@ -138,13 +139,22 @@ uint32_t memory::get_c(uint32_t loc_corrected)
         ch = c;
     }
 
-    return ch;
+    return ch;*/
+
+    char input;
+
+    fflush(stdin);// Unix
+    fpurge(stdin);// Friggin Windows!!!
+
+    input = getchar();
+
+    return input;
 }
 
 
 void memory::put_c(int32_t item)
 {
-    mem[PUT_C_START] = item;
+    printf("%c\n", item);
 }
 
 
