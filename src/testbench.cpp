@@ -19,6 +19,7 @@ int main()
   string in_name;
   string author_name;
   bool pass = false;
+  string inst;
   string message;
   int result = 0;
   string instr_name;
