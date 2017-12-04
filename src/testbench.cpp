@@ -25,11 +25,11 @@ int main()
   string instr_name;
   uint32_t binary;
 
-  cout<<"Enter the number of test files:"<<endl;
-  cin>>test_size;
-
   cout<<"Enter author name:"<<endl;
   cin>>author_name;
+
+  cout<<"Enter the number of test files:"<<endl;
+  cin>>test_size;
 
   csv_out.open("results.csv", ios::app);
 
@@ -80,7 +80,6 @@ void write_csv(fstream &outfile, int id, string instruction, bool status, string
 
 string int2string(const int binary)
 {
-  int tmp;
   char hex[16] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
   string output;
