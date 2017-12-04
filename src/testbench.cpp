@@ -19,7 +19,6 @@ int main()
   string in_name;
   string author_name;
   bool pass = false;
-  string inst;
   string message;
   int result = 0;
   string instr_name;
@@ -39,7 +38,7 @@ int main()
     exit(EXIT_FAILURE);
   }
 
-  csv_out<<"TestId , Instruction , Status , Author [, Message]"<<endl;
+  csv_out<<"TestId , Instruction , Status , Author , Message"<<endl;
 
   for (int i = 0; i < test_size; i++)
   {
@@ -49,7 +48,7 @@ int main()
     result = simulator(in_name, instr_name, binary);
 
     if (result == -1) pass = true;
-    
+
     else 
     {
       pass = false;
