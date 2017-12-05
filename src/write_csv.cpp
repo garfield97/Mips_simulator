@@ -14,7 +14,6 @@ int main(int argc, char **argv)
     string test_name =argv[3];
     string name = argv[4];
     string ref = argv[5];
-    string type = argv[6];
     string tmp;
     string argument;
 
@@ -29,13 +28,8 @@ int main(int argc, char **argv)
 
     if (!csv_out.is_open())
     {
-      cout<<"Failed"<<endl;
       exit(EXIT_FAILURE);
     }
-
-        fflush(stdin);
-    getchar();
-    cout<<"schmei"<<endl;
 
     csv_out<<"TestId , Instruction , Status , Author"<<endl;
 
