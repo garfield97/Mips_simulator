@@ -1,2 +1,2 @@
-TestId , Instruction , Status , Author
-1, src/tst.bin, Pass, p, 
+TestId , Instruction , Status , Author, Message
+1, src/tst.bin, Pass, pad, No errors, 
