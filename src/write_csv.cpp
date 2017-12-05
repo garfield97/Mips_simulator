@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 
     if (pass == "pass") passed = true;
 
-    fstream csv_out;
+    ofstream csv_out;
 
     csv_out.open(filename.c_str());
 
