@@ -14,7 +14,6 @@ int main(int argc, char **argv)
     string test_name =argv[3];
     string name = argv[4];
     string ref = argv[5];
-    string type = argv[6];
     string tmp;
     string argument;
     if(type =="-1") argument = "No errors";
@@ -40,15 +39,18 @@ int main(int argc, char **argv)
 
     if (!csv_out.is_open())
     {
-      cout<<"Failed"<<endl;
       exit(EXIT_FAILURE);
     }
 
+<<<<<<< HEAD
         fflush(stdin);
     getchar();
     cout<<"schmei"<<endl;
 
     csv_out<<"TestId , Instruction , Status , Author, Message"<<endl;
+=======
+    csv_out<<"TestId , Instruction , Status , Author"<<endl;
+>>>>>>> aa68fac9c491781d8d2a1c13132d27df731b8ee0
 
     write_csv(csv_out, ref, test_name, passed, name);
 
