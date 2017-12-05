@@ -157,7 +157,7 @@ uint32_t memory::get_c(uint32_t loc_corrected)
 
 void memory::put_c(int32_t item)
 {
-    printf("%c\n", item);
+    putchar(item);
 }
 
 

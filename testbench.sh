@@ -22,16 +22,35 @@ do
 
 	case $result in
 	-1)
-		arguments="$output_filename $passed $name $username $counter"
-		echo $arguments
-		./src/write_csv $arguments
+		fail_type=-1
+		arguments="$output_filename $passed $name $username $counter $fail_type"
+		;;
+	-10)
+		fail_type=-10
+		arguments="$output_filename $failed $name $username $counter $fail_type"
+		/bin/write_csv $arguments
+		;;
+	-11)
+		fail_type=-11
+		arguments="$output_filename $failed $name $username $counter $fail_type"
+		;;
+	-12)
+		fail_type=-12
+		arguments="$output_filename $failed $name $username $counter $fail_type"
+		;;
+	-20)
+		fail_type=-20
+		arguments="$output_filename $failed $name $username $counter $fail_type"
 		;;
 	*)
-		arguments="$output_filename $failed $name $username $counter"
-		echo $arguments
-		./src/write_csv $arguments
+		fail_type=0
+		arguments="$output_filename $failed $name $username $counter $fail_type"
 		;;
 	esac
+
+	echo $arguments
+
+	./bin/write_csv $arguments
 
 	((counter++)) 
 done
