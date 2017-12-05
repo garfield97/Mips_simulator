@@ -39,7 +39,7 @@ bool addition_exception(uint32_t op1, uint32_t op2) // Error code -10
 {
     try 
     {
-        uint32_t res = op1 + op2;
+        op1 = op1 + op2;
     }
     
     catch (const std::overflow_error &a)
@@ -54,7 +54,7 @@ bool subtraction_exception(uint32_t op1, uint32_t op2)
 {
     try 
     {
-        uint32_t res = op1 - op2;
+        op1 = op1 - op2;
     }
 
     catch (const std::underflow_error &a)
