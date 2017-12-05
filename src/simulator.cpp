@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
     registers CPUreg;
     program_counter PC;
     int result = 0; // Stores result of execution
+    bool pause = false;
     std::string tmp;
     bool show;
 
@@ -50,6 +51,8 @@ int main(int argc, char *argv[])
         result = mother(mem, CPUreg, PC);
         CPUreg.reg[0] = 0;
         PC.increment();
+
+        if (pause) getchar();
     }
 
     switch (result)

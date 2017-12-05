@@ -147,7 +147,7 @@ uint32_t memory::get_c(uint32_t loc_corrected)
     char input;
 
     fflush(stdin);// Unix
-    fpurge(stdin);// Friggin Windows!!!
+   
 
     input = getchar();
 
