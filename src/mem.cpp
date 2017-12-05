@@ -19,7 +19,10 @@ memory::memory()
 {
     mem = new uint32_t [MEM_SIZE]; // Declare memory of specified size in heap, so it is dynamically allocated
 
-    for (int i = RW_START; i <= RW_END; i++) mem[i] = 0;//Initialise all data memory to 0
+    for (int i = 0; i <= PUT_C_END; i++) 
+    {
+        mem[i] = 0;//Initialise all memory to 0
+    }
 }
 
 

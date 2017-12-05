@@ -8,23 +8,33 @@
 #include <exception>
 
 
-int32_t mother(memory &mem, registers &CPUreg, program_counter &PC, std::string &instr_type, uint32_t &binary);
-int32_t read_file(memory &mem, std::fstream &infile);
-int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const  uint32_t instruction, std::string &instr_type);
-int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction, std::string &instr_type);
-int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction, std::string &instr_type);
-int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction, std::string &instr_type);
+int mother(memory &mem, registers &CPUreg, program_counter &PC);
+int read_file(memory &mem, std::fstream &infile);
+int decode(memory &mem, registers &CPUreg,program_counter &PC, const  uint32_t instruction);
+int i_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
+int j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
+int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction);
 uint32_t arithmetic_shift_right(uint32_t input,uint32_t shift_size);
 
 
-int simulator(std::string file_name, std::string &instr_type, uint32_t &binary)
+int main(int argc, char *argv[])
 {
     memory mem;
     registers CPUreg;
     program_counter PC;
-    int result = 0;
+    int result = 0; // Stores result of execution
+    bool pause = false;
+    std::string tmp;
+    bool show;
 
-    std::string filename = file_name;
+    std::string filename = argv[1];
+
+    for (int i = 0; i < argc; i++) // Enables flags to be set 
+    {
+        tmp = argv[i];
+        if (tmp == "-pause") pause = true; // Pause after each instruction and wait for enter key
+        if (tmp == "-show")  show = true; // Show register values after each instruction
+    }
 
     std::fstream infile;
 
@@ -38,9 +48,11 @@ int simulator(std::string file_name, std::string &instr_type, uint32_t &binary)
 
     while (result == 0)
     {
-        result = mother(mem, CPUreg, PC, instr_type, binary);
+        result = mother(mem, CPUreg, PC);
         CPUreg.reg[0] = 0;
         PC.increment();
+
+        if (pause) getchar();
     }
 
     switch (result)
@@ -58,16 +70,15 @@ int simulator(std::string file_name, std::string &instr_type, uint32_t &binary)
 }
 
 
-int32_t mother(memory &mem, registers &CPUreg, program_counter &PC, std::string &instr_type, uint32_t &binary)
+int mother(memory &mem, registers &CPUreg, program_counter &PC)
 {
     uint32_t instruction = mem.get_instruction(PC.get_PC()); // Retrieve instruction from memory
-    binary = instruction;
 
-    return (decode(mem, CPUreg, PC, instruction, instr_type)); // Decode and execute
+    return (decode(mem, CPUreg, PC, instruction)); // Decode and execute
 }
 
 
-int32_t read_file(memory &mem, std::fstream &infile)
+int read_file(memory &mem, std::fstream &infile)
 {
     char c;
     uint32_t t = 0;
@@ -92,21 +103,21 @@ int32_t read_file(memory &mem, std::fstream &infile)
 }
 
 
-int32_t decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_t instruction, std::string &instr_type)
+int decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_t instruction)
 {
     uint32_t opcode = instruction >> 26;
 
     switch (opcode)
     {
-        case 0b000000: return (r_type(CPUreg, PC, instruction, instr_type));// R - Type
-        case 0b000010: return (j_type(mem, CPUreg, PC, instruction, instr_type));// J - Type
-        case 0b000011: return (j_type(mem, CPUreg, PC, instruction, instr_type));// J - Type
-        default: return (i_type(mem, CPUreg, PC, instruction, instr_type)); // I - Type
+        case 0b000000: return (r_type(CPUreg, PC, instruction));// R - Type
+        case 0b000010: return (j_type(mem, CPUreg, PC, instruction));// J - Type
+        case 0b000011: return (j_type(mem, CPUreg, PC, instruction));// J - Type
+        default: return (i_type(mem, CPUreg, PC, instruction)); // I - Type
     }
 }
 
 
-int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction, std::string &instr_type)
+int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
 {
     try
     {
@@ -160,7 +171,7 @@ int32_t i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsign
 }
 
 
-int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction, std::string &instr_type)
+int j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction)
 {
     try 
     {
@@ -195,7 +206,7 @@ int32_t j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32
 }
 
 
-int32_t r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction, std::string &instr_type)
+int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction)
 {
     try {
     const unsigned short rs = (instruction >> 21) & 0b11111;
