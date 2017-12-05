@@ -1,0 +1,73 @@
+00004825
+200a0001
+012a5820
+01404825
+01605025
+08000002
+
+//testing for R type instructions
+//CENTRE PART IS THE RS RT,RD and shift ammount, by that order, FINAL PORTION IS FUNC CODE
+
+//ALL SHFIT AMOUNTI S SET to 0 FOR FURTHER MODIFCATION
+//MODIFY THE REGISTERS TO CHANGE THE VALUES FOR THE TESTS
+
+
+000000    01000010010001100000       011000   // SIGNED MULTIPLICATION LOAD into RS=reg 8 and RT =9 the two signed numbers and output into the register RD=3
+000000    01000010010001100000       011001   //UNSIGNED MULTIPLICATION SAME AS ABOVE BUT REMOV THE TWO SIGNED NUMBERS IN REGISTERS, USED UNSIGNED 
+000000    01000010010001100000       100000   //addition_signed  SAME REGISTERS AS BEFORE 
+000000    01000010010001100000       100001   //unsigned_addition SAME REGISTERS AS BEFORE
+000000    01000010010001100000       011010   //Signed Division                             
+000000    01000010010001100000       011011   //Unsigned Division
+000000    00000000000001100000       010000   //move from HI rd is still 3 , same as before
+000000    00000000000001100000       010010   // Move from lo, same as move from HI
+000000    01000010010001100000       100100   //bitwise and, same registers as previous ones
+000000    01000010010001100000       100101   //bitwise or  ^^
+000000    01000010010001100000       100110   //bitwise xor  ^^
+000000    01000010010001100000       100111   //bitwise nor  ^^
+000000    01000010010001100000       101010   //slt , same registers as before
+000000    01000010010001100000       101011   //sltu , same registers as before
+000000    00000010010001100000       000000   // sll , no rs only rt, rt as before
+000000    01000010010001100000       000100   // SLLV , Same registers as initially
+000000    00000010010001100000       000010   // SRL, same registers as SLL
+000000    01000010010001100000       000110    //SRLV, same registers as in initial
+000000    00000010010001100000       000011    //SRA, no RS, only rt
+000000    01000010010001100000       000111    // SRAV, have all the sa me rs rt and rd as before
+000000    
+000000
+
+
+//I-TYPE
+          centre chunk is the RS and RT fields, RS is still 8 and RT is still 9
+001000    0100001001    add in the immediate field for values that wants to be tested //addi
+001001    0100001001     ^^                                                           // addi unsigned
+100011    0100001001     ^^                                                          //lw
+100001    0100001001     ^^                                                          //lh
+100101    0100001001     ^^                                                          //lhu
+100000    0100001001     ^^                                                          //lb
+100100    0100001001     ^^                                                           //lbu   
+101011    0100001001     ^^                                                           //sw
+101001    0100001001     ^^                                                           //sh
+101000    0100001001     ^^                                                          //sb
+001111    0000001001     ^^                                                          //lui
+001101    0100001001     ^^                                                           //ori
+001100    0100001001     ^^                                                           //andi
+001110    0100001001     ^^                                                           //xori
+001010    0100001001     ^^                                                           //slti
+001011    0100001001     ^^                                                          //sltiu
+000100    0100001001     ^^                                                           //beq
+000101    0100001001     ^^                                                             //bne
+
+
+
+
+
+
+
+
+//J-TYPE
+000010     -- SPECIFY THE TARGET ADDRESS FOR TESTING //j
+000011                                                  //JAL
+
+
+
+
