@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     cout<<"Enter author name:"<<endl;
     cin>>author_name;
 
-    csv_out.open("results.csv");
+    csv_out.open("results.csv", ios::app);
 
     if (!csv_out.is_open())
     {
@@ -33,7 +33,11 @@ int main(int argc, char **argv)
      exit(EXIT_FAILURE);
     }
 
-    csv_out<<"TestId , Instruction , Status , Author"<<endl;
+    string tmp;
+
+    csv_out>>tmp;
+
+    if (tmp != "TestId") csv_out<<"TestId , Instruction , Status , Author"<<endl;
 
     string path = argv[1];
     string test_file = argv[2];
