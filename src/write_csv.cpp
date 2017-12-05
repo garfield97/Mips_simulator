@@ -23,9 +23,9 @@ int main(int argc, char **argv)
 
     if (pass == "pass") passed = true;
 
-    ofstream csv_out;
+    fstream csv_out;
 
-    csv_out.open(filename.c_str());
+    csv_out.open(filename.c_str(), ios::out);
 
     if (!csv_out.is_open())
     {
