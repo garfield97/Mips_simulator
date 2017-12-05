@@ -55,15 +55,7 @@ int main(int argc, char *argv[])
         if (pause) getchar();
     }
 
-    switch (result)
-    {
-        case -1: std::cout<<result<<" Execution completed successfully"<<std::endl; break;// Program completed successfully
-        case -12: std::cout<<result<<" Invalid instruction"<<std::endl; break;// Invalid instruction
-        case -11: std::cout<<result<<" Invalid address"<<std::endl; break;// Memory exception
-        case -10: std::cout<<result<<" Arithmetic exception"<<std::endl; break;// Arithmetic exception
-        case -20: std::cout<<result<<" Internal error"<<std::endl; break;// Unkown error
-        default: std::cout<< result<<" Other error"<<std::endl; break;// Any other errors?
-    }
+    std::cout<<result<<std::endl;
 
 
     return result;

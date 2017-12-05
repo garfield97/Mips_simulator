@@ -22,10 +22,14 @@ do
 
 	case $result in
 	-1)
-		./src/write_csv $output_filename $passed $name $username $counter
+		arguments="$output_filename $passed $name $username $counter"
+		echo $arguments
+		./src/write_csv $arguments
 		;;
 	*)
-		./src/write_csv $output_filename $failed $name $username $counter
+		arguments="$output_filename $failed $name $username $counter"
+		echo $arguments
+		./src/write_csv $arguments
 		;;
 	esac
 
