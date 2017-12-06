@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
         PC.increment();
     }
 
+    std::cout<<CPUreg.reg[1]<<std::endl;
     return result;
 }
 

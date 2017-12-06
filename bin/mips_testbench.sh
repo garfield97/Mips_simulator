@@ -64,3 +64,8 @@ do
 
 	((counter++)) #Counter increments, acts as test reference
 done
+
+echo
+echo
+echo $num_failures failed instructions
+echo Failures occured at $failure_list
