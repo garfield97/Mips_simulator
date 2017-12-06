@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
     infile.open(filename.c_str(), std::ios::binary | std::ios::in);
 
-    if (!infile.is_open()) {std::cout<<"Invalid filename"<<std::endl; return 0;}
+    if (!infile.is_open()) {std::cout<<"Invalid filename"<<std::endl; return -20;}
 
     if (read_file(mem, infile) == -12) result = -12; //If = -12 then binary too large to store in instruction memory
 
@@ -136,8 +136,8 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
         case 0x28: if (write_to_zero(IMM + CPUreg.reg[rs])) {return -1;} mem.store_byte(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sb
         case 0x29: if (write_to_zero(IMM + CPUreg.reg[rs])) {return -1;} mem.store_hword(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sh
         case 0x30: if (write_to_zero(IMM + CPUreg.reg[rs])) {return -1;} mem.store_word(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
-        case 0x22: if (write_to_zero(IMM + CPUreg.reg[rs])) CPUreg.reg[rt] = mem.load_word_left(IMM + CPUreg.reg[rs]); return 0;// lwl
-        case 0x26: if (write_to_zero(IMM + CPUreg.reg[rs])) CPUreg.reg[rt] = mem.load_word_right(IMM + CPUreg.reg[rs]); return 0;// lwr
+        case 0x22: CPUreg.reg[rt] = mem.load_word_left(IMM + CPUreg.reg[rs]); return 0;// lwl
+        case 0x26: CPUreg.reg[rt] = mem.load_word_right(IMM + CPUreg.reg[rs]); return 0;// lwr
         case 0x20: CPUreg.reg[rt] = (mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lb
         case 0x21: CPUreg.reg[rt] = (mem.load_hword(IMM + CPUreg.reg[rs])); return 0; // lh
         default: return -12;
