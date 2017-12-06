@@ -12,6 +12,8 @@
         "ios": "cpp",
         "ostream": "cpp",
         "__locale": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "__functional_base": "cpp",
+        "__string": "cpp"
     }
 }

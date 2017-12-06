@@ -21,11 +21,11 @@ int main(int argc, char **argv)
     
     else if(type == "-10") argument = "Arithmetic errror";
     
-    else if(type == "-11") argument =  "Memory Exception";
+    else if(type == "-11") argument =  "Memory exception";
     
-    else if(type == "-12") argument =  "Invalid Instruction";
+    else if(type == "-12") argument =  "Invalid instruction";
     
-    else if(type == "-20") argument =  "Internal Error";
+    else if(type == "-20") argument =  "Internal error";
     
     else argument = "Unkown error";
       
@@ -36,14 +36,14 @@ int main(int argc, char **argv)
 
     fstream csv_out;
 
-    csv_out.open(filename.c_str(), ios::out);
+    csv_out.open(filename.c_str(), ios::app | ios::out);
 
     if (!csv_out.is_open())
     {
       exit(EXIT_FAILURE);
     }
     
-    csv_out<<"TestId , Instruction , Status , Author, Message"<<endl;
+    if (ref == "1") csv_out<<"TestId , Instruction , Status , Author, Message"<<endl;
 
     write_csv(csv_out, ref, test_name, passed, name, argument);
 
@@ -57,9 +57,9 @@ void write_csv(fstream &outfile, string id, string instruction, bool status, str
 {
   if (status)
   {
-    outfile<<id<<", "<<instruction<<", "<<"Pass"<<", "<<author<<", "<<argument<<", "; 
+    outfile<<id<<", "<<instruction<<", "<<"Pass"<<", "<<author<<", "<<argument<<", "<<endl; 
     return;
   }
 
-  outfile<<id<<", "<<instruction<<", "<<"Fail"<<", "<<author<<", "<<argument<<", "; 
+  outfile<<id<<", "<<instruction<<", "<<"Fail"<<", "<<author<<", "<<argument<<", "<<endl; 
 }

@@ -131,19 +131,6 @@ void memory::store_hword(uint32_t loc, const int32_t input)
 
 uint32_t memory::get_c(uint32_t loc_corrected)
 {
-    /*volatile int8_t *GETC=(volatile int8_t *)GET_C_START;
-
-    int8_t c = *GETC;
-
-    uint32_t ch = 0;
-
-    if(c != -1)
-    {
-        ch = c;
-    }
-
-    return ch;*/
-
     char input;
 
     fflush(stdin);// Unix

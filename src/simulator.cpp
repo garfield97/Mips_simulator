@@ -24,18 +24,9 @@ int main(int argc, char *argv[])
     registers CPUreg;
     program_counter PC;
     int result = 0; // Stores result of execution
-    bool pause = false;
     std::string tmp;
-    bool show;
 
     std::string filename = argv[1];
-
-    for (int i = 0; i < argc; i++) // Enables flags to be set 
-    {
-        tmp = argv[i];
-        if (tmp == "-pause") pause = true; // Pause after each instruction and wait for enter key
-        if (tmp == "-show")  show = true; // Show register values after each instruction
-    }
 
     std::fstream infile;
 
@@ -43,7 +34,7 @@ int main(int argc, char *argv[])
 
     if (!infile.is_open()) {std::cout<<"Invalid filename"<<std::endl; return 0;}
 
-    if (read_file(mem, infile) == -12) {std::cout<<"File too large to read"<<std::endl; result = -12;} //If = -11 then binary too large to store in instruction memory
+    if (read_file(mem, infile) == -12) result = -12; //If = -12 then binary too large to store in instruction memory
 
     infile.close();
 
@@ -52,11 +43,7 @@ int main(int argc, char *argv[])
         result = mother(mem, CPUreg, PC);
         CPUreg.reg[0] = 0;
         PC.increment();
-
-        if (pause) getchar();
     }
-
-    std::cout<<result<<std::endl;
 
     return result;
 }
@@ -98,13 +85,13 @@ int decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_t in
 {
     uint32_t opcode = instruction >> 26;
 
-    if (instruction == 0) return -12;
+    if (instruction == 0) return 12;
 
     switch (opcode)
     {
-        case 0b000000: return (r_type(CPUreg, PC, instruction));// R - Type
-        case 0b000010: return (j_type(mem, CPUreg, PC, instruction));// J - Type
-        case 0b000011: return (j_type(mem, CPUreg, PC, instruction));// J - Type
+        case 0b000000: return (r_type(CPUreg, PC, instruction)); // R - Type
+        case 0b000010: return (j_type(mem, CPUreg, PC, instruction)); // J - Type
+        case 0b000011: return (j_type(mem, CPUreg, PC, instruction)); // J - Type
         default: return (i_type(mem, CPUreg, PC, instruction)); // I - Type
     }
 }
