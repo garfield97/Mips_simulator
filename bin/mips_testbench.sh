@@ -64,7 +64,8 @@ do
 	((counter++)) #Counter increments, acts as test reference
 done
 
-echo
-echo
-echo $num_failures failed instructions
-echo Failures occured at $failure_list
+if [ $num_failures -gt 0 ]
+then
+	echo $num_failures failed instructions >> test/output/output/failures.txt
+	echo Failures occured at $failure_list >> test/output/output/failures.txt
+fi
