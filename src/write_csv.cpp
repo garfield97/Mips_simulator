@@ -42,12 +42,8 @@ int main(int argc, char **argv)
     {
       exit(EXIT_FAILURE);
     }
-
-    string tmp;
-
-    csv_out>>tmp;
-
-    if (tmp != "TestId") csv_out<<"TestId , Instruction , Status , Author, Message"<<endl;
+    
+    csv_out<<"TestId , Instruction , Status , Author, Message"<<endl;
 
     write_csv(csv_out, ref, test_name, passed, name, argument);
 

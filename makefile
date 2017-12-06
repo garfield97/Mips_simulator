@@ -6,4 +6,4 @@ simulator : bin/mips_simulator
 bin/write_csv: src/write_csv.cpp
 	mkdir -p bin
 	g++ -g -Wall -std=c++11 src/write_csv.cpp -o bin/write_csv
-testbench: bin/write_csv
+testbench : bin/write_csv
