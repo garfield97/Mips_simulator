@@ -35,30 +35,35 @@ do
 		type=-10
 		arguments="$output_filename $failed $name $username $counter $type"
 		echo $name failed testing
+		failure_list=$($failure_list $name)
 		((num_failures++))
 		;;
 	245) #Memory exception
 		type=-11
 		arguments="$output_filename $failed $name $username $counter $type"
 		echo $name failed testing
+		failure_list=$($failure_list $name)
 		((num_failures++))
 		;;
 	244) #Invalid instruction
 		type=-12
 		arguments="$output_filename $failed $name $username $counter $type"
 		echo $name failed testing
+		failure_list=$($failure_list $name)
 		((num_failures++))
 		;;
 	236) #Internal error
 		type=-20
 		arguments="$output_filename $failed $name $username $counter $type"
 		echo $name failed testing
+		failure_list=$($failure_list $name)
 		((num_failures++))
 		;;
 	*) #Unkown Error
 		type=0
 		arguments="$output_filename $failed $name $username $counter $type"
 		echo $name failed testing
+		failure_list=$($failure_list $name)
 		((num_failures++))
 		;;
 	esac
@@ -71,4 +76,12 @@ done
 echo
 echo
 echo Testing completed with $num_failures failures
+
+if [ $num_failures -gt 0 ]
+then
+	echo
+	echo The following failed: $failure_list
+	echo
+fi
+
 echo Results saved within $output_filename
