@@ -6,6 +6,7 @@
 #include "headers/error_check.hpp"
 #include <cinttypes>
 #include <exception>
+#include <bitset>
 
 
 int mother(memory &mem, registers &CPUreg, program_counter &PC);
@@ -81,9 +82,8 @@ int read_file(memory &mem, std::fstream &infile)
         {
             infile >> c;
             if (c == '1') t += (1 << (31-i));
+            if (infile.eof()) return 0;
         }
-
-        if (t == 0x00000000) break;
 
         mem.store_instruction(count, t);
         t = 0;
@@ -97,6 +97,8 @@ int read_file(memory &mem, std::fstream &infile)
 int decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_t instruction)
 {
     uint32_t opcode = instruction >> 26;
+
+    if (instruction == 0) return -12;
 
     switch (opcode)
     {
