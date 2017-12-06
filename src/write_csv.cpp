@@ -15,7 +15,6 @@ int main(int argc, char **argv)
     string name = argv[4];
     string ref = argv[5];
     string type = argv[6];
-    string tmp;
     string argument;
 
     if(type =="-1") argument = "No errors";
@@ -44,7 +43,11 @@ int main(int argc, char **argv)
       exit(EXIT_FAILURE);
     }
 
-    csv_out<<"TestId , Instruction , Status , Author, Message"<<endl;
+    string tmp;
+
+    csv_out>>tmp;
+
+    if (tmp != "TestId") csv_out<<"TestId , Instruction , Status , Author, Message"<<endl;
 
     write_csv(csv_out, ref, test_name, passed, name, argument);
 

@@ -2,7 +2,7 @@
 
 tmp=tmp.txt
 
-file_names='src/tst.bin'
+file_names='tst2.bin'
 
 output_filename=results.csv
 passed=pass
