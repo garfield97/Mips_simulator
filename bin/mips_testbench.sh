@@ -10,7 +10,6 @@ test_directory=test_binaries/ #Path to test binaries
 
 read -p 'Author name: ' username
 
-output='results.csv'
 counter=1
 type=-1
 num_failures=0
