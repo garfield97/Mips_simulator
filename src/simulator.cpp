@@ -238,8 +238,8 @@ int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction)
             case 0x07    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], CPUreg.reg[rs]&0x3F); return 0;// srav
             case 0x11    : CPUreg.hi = CPUreg.reg[rd]; // mthi
             case 0x13    : CPUreg.lo = CPUreg.reg[rd]; // mtlo
-            case 0x08    : if (invalid_instruction(CPUreg.reg[rs])) {return 3;} PC.load_PC(CPUreg.reg[rs], true);if (access_zero(CPUreg.reg[rs]) == true) {return 10;} return 0; //jr
-            case 0x09    : CPUreg.reg[31] = PC.get_PC(); PC.load_PC(CPUreg.reg[rs], true); if (access_zero(CPUreg.reg[rs]) == true) {return 10;}return 0; //jalr
+            case 0x08    : if (access_zero(CPUreg.reg[rs]) == true) {return 10;} if (invalid_instruction(CPUreg.reg[rs])) {return 3;} PC.load_PC(CPUreg.reg[rs], true);if (access_zero(CPUreg.reg[rs]) == true) {return 10;} return 0; //jr
+            case 0x09    : CPUreg.reg[31] = PC.get_PC(); if (access_zero(CPUreg.reg[rs]) == true) PC.load_PC(CPUreg.reg[rs], true); if (access_zero(CPUreg.reg[rs]) == true) {return 10;}return 0; //jalr
             default: return 3;
     }
     }

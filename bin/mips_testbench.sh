@@ -2,7 +2,7 @@
 
 tmp=tmp.txt
 
-file_names='j jal srav sra srlv srl sllv sll add addu and div nor divu mult multu or slt sltu addi addi_max addiu andi lw ori xori corner arithmetic_overflow division_error invalid_instruction memory_exception' #Names of all non arithmetic filenames
+file_names='j jal srav sra srlv srl sllv sll add addu and div nor divu mult multu or slt sltu addi addi_max addiu andi lw ori xori corner arithmetic_overflow division_error invalid_instruction jalr' #Names of all non arithmetic filenames
 arith_filenames=' ' #Names of arithmetic tests
 passed=pass #Pass variable
 failed=fail #Fail variable
@@ -15,7 +15,6 @@ read -p 'Author name: ' username
 
 counter=1
 type=-1
-num_failures=0
 
 echo TestId , Instruction , Status , Author, Message > results.csv
 
@@ -39,22 +38,18 @@ do
 	1) #Arithmetic overflow
 		type=-10
 		arguments="$failed $name $username $counter $type"
-		((num_failures++))
 		;;
 	2) #Memory exception
 		type=-11
 		arguments="$failed $name $username $counter $type"
-		((num_failures++))
 		;;
 	3) #Invalid instruction
 		type=-12
 		arguments="$failed $name $username $counter $type"
-		((num_failures++))
 		;;
 	4) #Internal error
 		type=-20
 		arguments="$failed $name $username $counter $type"
-		((num_failures++))
 		;;
 	*) #Check result of arithmetic instructions
 		val=$(cat test_binaries_sol/$sol$name$txt) #Load expected solution and compare
@@ -65,7 +60,6 @@ do
 		else
 			type=0
 			arguments="$failed $name $username $counter $type"
-			((num_failures++))
 		fi
 		;;
 	esac
@@ -74,10 +68,3 @@ do
 
 	((counter++)) #Counter increments, acts as test reference
 done
-
-if [ $num_failures -gt 0 ]
-then
-	mkdir test
-	mkdir test/output
-	echo $num_failures failed instructions > test/output/failures.txt
-fi

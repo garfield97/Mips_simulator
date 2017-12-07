@@ -29,4 +29,4 @@ TestId , Instruction , Status , Author, Message
 28, arithmetic_overflow, Fail, p, Arithmetic errror, 
 29, division_error, Fail, p, Arithmetic errror, 
 30, invalid_instruction, Fail, p, Invalid instruction, 
-31, memory_exception, Fail, p, Invalid instruction, 
+31, jalr, Fail, p, Internal error, 
