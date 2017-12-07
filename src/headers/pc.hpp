@@ -2,6 +2,7 @@
 #define PC_HPP
 
 #include <iostream>
+#include <cinttypes>
 
 class program_counter
 {
@@ -12,15 +13,16 @@ public:
     //To increment PC
     void increment();
     //To load a new value into PC
-    void load_PC( int instr);
+    void load_PC(uint32_t instr, bool lag);
     // Getter for PC
-    int get_PC() const;
+    uint32_t get_PC() const;
+    uint32_t get_PC_prev() const;
 
 
-private:
-
-    int PC;
-    
+private: 
+    bool delay;
+    uint32_t PC;
+    uint32_t PC_prev;
 };
 
 #endif
