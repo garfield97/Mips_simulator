@@ -58,12 +58,12 @@ do
 		;;
 	*) #Check result of arithmetic instructions
 		val=$(cat test_binaries_sol/$sol$name$txt) #Load expected solution and compare
-		echo $val
 		if [ $val -eq $result ]
 		then 
 			type=-1
 			arguments="$passed $name $username $counter $type"
 		else
+			type=0
 			arguments="$failed $name $username $counter $type"
 			((num_failures++))
 		fi
