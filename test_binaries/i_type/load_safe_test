@@ -1,0 +1,20 @@
+                 Safe memory address     00100000000000000000000000000000
+                 
+                 LW and SW test.
+                 
+                 
+               
+    
+               
+               
+               001000    0100101000  0000000000001010 // adding 10 to register 9
+               
+               001111    0000001000  0010000000000000   LUI the first half of the address  ,since rest are 0 anyways,loaded into register 8 address   
+               
+               101011    0100001001  0000000000000000             //sw   saved the words onto memory
+               
+               100011    0100000011  0000000000000000                   //lw stored in register 3
+               
+               00001000000000000000000000000000
+               00000000000000000000000000100000
+
