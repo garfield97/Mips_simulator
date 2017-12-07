@@ -25,6 +25,14 @@ bool mem_range_error(uint32_t access_addr) // Error code -11
     return false;
 }
 
+bool write_check(uint32_t access_addr)
+{
+    access_addr /= 4;
+
+    if ((access_addr >= RW_START && access_addr <= RW_END) || access_addr == PUT_C_START) return false;
+    return true;
+}
+
 
 bool invalid_instruction(uint32_t access_addr) // Error code -12
 {

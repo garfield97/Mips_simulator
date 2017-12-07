@@ -123,7 +123,7 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
                     else if (CPUreg.reg[rt] == 0b10001) {if (CPUreg.reg[rs] >= 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} if (access_zero(IMM) == true) {return 10;}return 0;} //bgezal
                     else if (CPUreg.reg[rt] == 0x0) {if (CPUreg.reg[rs] < 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0;} //bltz
                     else if (CPUreg.reg[rt] == 0x10) {if (CPUreg.reg[rs] < 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0;} //bltzal
-                    return 3;
+                    exit(3);
         case 0x07: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);}
                     if (CPUreg.reg[rs] > 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // bgtz
         case 0x06: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} 
@@ -139,9 +139,9 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
         case 0x23: CPUreg.reg[rt] = mem.load_word(IMM + CPUreg.reg[rs]); return 0; // lw
         case 0x24: CPUreg.reg[rt] = (unsigned)(mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lbu
         case 0x25: CPUreg.reg[rt] = (unsigned)(mem.load_hword(IMM + CPUreg.reg[rs])); return 0; // lhu
-        case 0x28: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} mem.store_byte(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sb
-        case 0x29: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} mem.store_hword(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sh
-        case 0x43: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} mem.store_word(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
+        case 0x28: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} if (write_check(IMM + CPUreg.reg[rs])) {exit(3);} mem.store_byte(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sb
+        case 0x29: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} if (write_check(IMM + CPUreg.reg[rs])) {exit(3);} mem.store_hword(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sh
+        case 0x43: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} if (write_check(IMM + CPUreg.reg[rs])) {exit(3);} mem.store_word(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
         case 0x22: CPUreg.reg[rt] = mem.load_word_left(IMM + CPUreg.reg[rs]); return 0;// lwl
         case 0x26: CPUreg.reg[rt] = mem.load_word_right(IMM + CPUreg.reg[rs]); return 0;// lwr
         case 0x20: CPUreg.reg[rt] = (mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lb
