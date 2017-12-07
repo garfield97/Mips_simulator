@@ -26,8 +26,6 @@ int main(int argc, char **argv)
     bool passed = false;
 
     if (pass == "pass") passed = true;
-    
-    if (ref == "1") cout<<"TestId , Instruction , Status , Author, Message"<<endl;
 
     write_csv(ref, test_name, passed, name, argument);
 
