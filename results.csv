@@ -11,7 +11,7 @@ TestId , Instruction , Status , Author, Message
 10, addu, Pass, p, No errors, 
 11, and, Pass, p, No errors, 
 12, div, Pass, p, No errors, 
-13, nor, Fail, p, Unkown error, 
+13, nor, Pass, p, No errors, 
 14, divu, Pass, p, No errors, 
 15, mult, Pass, p, No errors, 
 16, multu, Pass, p, No errors, 
