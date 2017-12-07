@@ -2,7 +2,7 @@
 
 tmp=tmp.txt
 
-file_names='j jal srav sra srlv srl sllv sll add addu and div divu mult multu nor or slt sltu' #Names of all non arithmetic filenames
+file_names='j jal srav sra srlv srl sllv sll add addu and div divu mult multu nor or slt sltu addi addi_max addiu andi lw ori xori' #Names of all non arithmetic filenames
 arith_filenames=' ' #Names of arithmetic tests
 passed=pass #Pass variable
 failed=fail #Fail variable
@@ -26,7 +26,6 @@ do
 	command="$1 $file_loc"
 	$command temp.txt #Run test binary in simulator
 	result=$? #Retrieve return value of simulator
-	echo $result
 
 	case $result in
 	10) #Passed

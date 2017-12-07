@@ -1,1 +1,1 @@
-1 failed instructions
+3 failed instructions
