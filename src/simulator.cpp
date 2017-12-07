@@ -37,9 +37,9 @@ int main(int argc, char *argv[])
 
     infile.open(filename.c_str(), std::ios::binary | std::ios::in);
 
-    if (!infile.is_open()) {std::cout<<"Invalid filename"<<std::endl; return 4;}
+    if (!infile.is_open()) {std::cout<<"Invalid filename"<<std::endl; exit(4);}
 
-    if (read_file(mem, infile) == 3) result = 3; //If 3 then binary too large to store in instruction memory
+    if (read_file(mem, infile) == 3) exit(3); //If 3 then binary too large to store in instruction memory
 
     infile.close();
 
@@ -49,8 +49,6 @@ int main(int argc, char *argv[])
         CPUreg.reg[0] = 0;
         PC.increment();
     }
-
-    if (result == 1 || result ==2 || result == 3 || result ==4) CPUreg.reg[3] = result; // If error code exists, then load into return register
 
     return CPUreg.reg[3];//Return output
 }
@@ -76,7 +74,7 @@ int read_file(memory &mem, std::fstream &infile)
         {
             infile >> c;
             if (c == '1') t += (1 << (31-i));
-            if (count > (0x4400000<<2)) return 3;
+            if (count > (0x4400000<<2)) exit(3);
             if (infile.eof()) return 0;
         }
 
@@ -118,19 +116,19 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
 
     switch (opcode)
     {
-        case 0x04: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {return 2;} if (CPUreg.reg[rs] == CPUreg.reg[rt]) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} if (access_zero(IMM) == true) {return 10;} return 0; // beq
-        case 0x05: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {return 2;} if (CPUreg.reg[rs] != CPUreg.reg[rt]) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // bne
-        case 0x01: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {return 2;} 
+        case 0x04: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} if (CPUreg.reg[rs] == CPUreg.reg[rt]) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} if (access_zero(IMM) == true) {return 10;} return 0; // beq
+        case 0x05: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} if (CPUreg.reg[rs] != CPUreg.reg[rt]) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // bne
+        case 0x01: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} 
                     if (CPUreg.reg[rt] == 0x1) {if (CPUreg.reg[rs] >= 0) PC.load_PC(PC.get_PC()+4+(IMM<<2), true); return 0;} //bgez
                     else if (CPUreg.reg[rt] == 0b10001) {if (CPUreg.reg[rs] >= 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} if (access_zero(IMM) == true) {return 10;}return 0;} //bgezal
                     else if (CPUreg.reg[rt] == 0x0) {if (CPUreg.reg[rs] < 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0;} //bltz
                     else if (CPUreg.reg[rt] == 0x10) {if (CPUreg.reg[rs] < 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0;} //bltzal
                     return 3;
-        case 0x07: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {return 2;}
+        case 0x07: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);}
                     if (CPUreg.reg[rs] > 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // bgtz
-        case 0x06: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {return 2;} 
+        case 0x06: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} 
                     if (CPUreg.reg[rs] <= 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // blez
-        case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {return 1;} CPUreg.reg[rs] = CPUreg.reg[rt] + IMM; return 0; //addi
+        case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {exit(1);} CPUreg.reg[rs] = CPUreg.reg[rt] + IMM; return 0; //addi
         case 0x09: CPUreg.reg[rs] = (unsigned)(CPUreg.reg[rt]) + (unsigned)(IMM); return 0; // addiu
         case 0x0A: if (CPUreg.reg[rs] < IMM) CPUreg.reg[rt] = 1; return 0; // slti
         case 0x0B: if ((unsigned)CPUreg.reg[rs] < (unsigned)(IMM)) CPUreg.reg[rt] = 1; return 0; // sltiu
@@ -148,13 +146,13 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
         case 0x26: CPUreg.reg[rt] = mem.load_word_right(IMM + CPUreg.reg[rs]); return 0;// lwr
         case 0x20: CPUreg.reg[rt] = (mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lb
         case 0x21: CPUreg.reg[rt] = (mem.load_hword(IMM + CPUreg.reg[rs])); return 0; // lh
-        default: return 3;
+        default: exit(3);
     }
     }
 
     catch (const std::system_error &a)
     {
-        return 4;
+        exit(4);
     }
 }
 
@@ -171,7 +169,7 @@ int j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t i
     tmp = tmp & 0xF0000000;
     address += tmp;
 
-    if (mem_range_error(address)) return 2;
+    if (mem_range_error(address)) exit(2);
     if (access_zero(address) == true) {return 10;}
 
     switch (type)
@@ -183,13 +181,13 @@ int j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t i
         	CPUreg.reg[31] = PC.get_PC(); // jal
         	PC.load_PC(address, true);
         	return 0;
-        default: return 3;
+        default: exit(3);
     }
     }
 
     catch(const std::system_error &a)
     {
-        return 4;
+        exit(4);
     }
 }
 
@@ -210,8 +208,8 @@ int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction)
     {
     		case 0x20    : if (addition_exception(rs, rt)) {return 1;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; return 0;//add
             case 0x21    : CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] + (unsigned)CPUreg.reg[rt]; return 0;// addu
-            case 0x22    : if (subtraction_exception(CPUreg.reg[rs], CPUreg.reg[rt])) {return 1;} CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; return 0; // sub
-            case 0x23    : if (subtraction_exception(CPUreg.reg[rs], CPUreg.reg[rt])) {return 1;} CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] - (unsigned)CPUreg.reg[rt]; return 0; // subu
+            case 0x22    : if (subtraction_exception(CPUreg.reg[rs], CPUreg.reg[rt])) {exit (1);} CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; return 0; // sub
+            case 0x23    : if (subtraction_exception(CPUreg.reg[rs], CPUreg.reg[rt])) {exit (1);} CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] - (unsigned)CPUreg.reg[rt]; return 0; // subu
             case 0x18    : temp=(CPUreg.reg[rs]*CPUreg.reg[rt]);// mult
                            CPUreg.hi=(temp>>32);
                            CPUreg.lo=(temp & 0xFFFF); return 0;
@@ -238,15 +236,15 @@ int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction)
             case 0x07    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], CPUreg.reg[rs]&0x3F); return 0;// srav
             case 0x11    : CPUreg.hi = CPUreg.reg[rd]; // mthi
             case 0x13    : CPUreg.lo = CPUreg.reg[rd]; // mtlo
-            case 0x08    : if (access_zero(CPUreg.reg[rs]) == true) {return 10;} if (invalid_instruction(CPUreg.reg[rs])) {return 3;} PC.load_PC(CPUreg.reg[rs], true);if (access_zero(CPUreg.reg[rs]) == true) {return 10;} return 0; //jr
+            case 0x08    : if (access_zero(CPUreg.reg[rs]) == true) {return 10;} if (invalid_instruction(CPUreg.reg[rs])) {exit (3);} PC.load_PC(CPUreg.reg[rs], true);if (access_zero(CPUreg.reg[rs]) == true) {return 10;} return 0; //jr
             case 0x09    : CPUreg.reg[31] = PC.get_PC(); if (access_zero(CPUreg.reg[rs]) == true) PC.load_PC(CPUreg.reg[rs], true); if (access_zero(CPUreg.reg[rs]) == true) {return 10;}return 0; //jalr
-            default: return 3;
+            default: exit (3);
     }
     }
 
     catch (const std::system_error &a)
     {
-        return 4;
+        exit (4);
     }
 }
 
