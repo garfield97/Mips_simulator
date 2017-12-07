@@ -50,8 +50,8 @@ int main(int argc, char *argv[])
         PC.increment();
     }
 
-    if (result != 10 || result != 0) CPUreg.reg[3] = 10; // If error code exists, then load into return register
-    
+    if (result == 1 || result ==2 || result == 3 || result ==4) CPUreg.reg[3] = result; // If error code exists, then load into return register
+
     return CPUreg.reg[3];//Return output
 }
 
