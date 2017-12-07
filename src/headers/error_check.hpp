@@ -6,8 +6,8 @@
 
 #define MEM_SIZE 0x40000000
 #define NULL_START 0x00000000
-#define NULL_END 0x00000000
-#define EXEC_START 0x9000000
+#define NULL_END 0x00000001
+#define EXEC_START 0x4000000
 #define EXEC_END 0x4400000
 #define RW_START 0x8000000
 #define RW_END 0x9000000
@@ -29,7 +29,7 @@ bool write_check(uint32_t access_addr)
 {
     access_addr /= 4;
 
-    if ((access_addr >= RW_START && access_addr <= RW_END) || access_addr == PUT_C_START) return false;
+    if ((access_addr >= RW_START && access_addr < RW_END) || access_addr == PUT_C_START) return false;
     return true;
 }
 
