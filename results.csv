@@ -26,4 +26,5 @@ TestId , Instruction , Status , Author, Message
 25, ori, Pass, p, No errors, 
 26, xori, Pass, p, No errors, 
 27, corner, Pass, p, No errors, 
-28, arithmetic_overflow, Pass, p, No errors, 
+28, arithmetic_overflow, Fail, p, Arithmetic errror, 
+29, division_error, Fail, p, Arithmetic errror, 
