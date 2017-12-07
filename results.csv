@@ -25,3 +25,5 @@ TestId , Instruction , Status , Author, Message
 24, lw, Pass, p, No errors, 
 25, ori, Pass, p, No errors, 
 26, xori, Pass, p, No errors, 
+27, corner, Pass, p, No errors, 
+28, arithmetic_overflow, Pass, p, No errors, 
