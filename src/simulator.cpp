@@ -143,7 +143,7 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
         case 0x25: CPUreg.reg[rt] = (unsigned)(mem.load_hword(IMM + CPUreg.reg[rs])); return 0; // lhu
         case 0x28: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} mem.store_byte(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sb
         case 0x29: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} mem.store_hword(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sh
-        case 0x30: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} mem.store_word(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
+        case 0x43: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} mem.store_word(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
         case 0x22: CPUreg.reg[rt] = mem.load_word_left(IMM + CPUreg.reg[rs]); return 0;// lwl
         case 0x26: CPUreg.reg[rt] = mem.load_word_right(IMM + CPUreg.reg[rs]); return 0;// lwr
         case 0x20: CPUreg.reg[rt] = (mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lb
