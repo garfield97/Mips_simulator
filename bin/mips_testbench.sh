@@ -5,7 +5,7 @@ tmp=tmp.txt
 file_names='j jal srav sra srlv srl sllv sll add addu and div nor divu mult multu or slt sltu addi addi_max addiu andi lw ori xori corner arithmetic_overflow invalid_instruction jr beq bgez bgezal bgtz blez bltz bltzal' #Names of all non arithmetic filenames
 
 passed=pass #Pass variable
-#file_names='bgez'
+
 failed=fail #Fail variable
 test_directory=test_binaries/ #Path to test binaries
 bin=.bin

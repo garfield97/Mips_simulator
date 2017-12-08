@@ -136,7 +136,7 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
         case 0x0C: CPUreg.reg[rs] = CPUreg.reg[rt] & IMM; return_val = CPUreg.reg[rs];return 0; // andi
         case 0x0D: CPUreg.reg[rs] = CPUreg.reg[rt] | IMM; return_val = CPUreg.reg[rs];return 0; // ori
         case 0x0F: CPUreg.reg[rs] = (IMM << 16); return_val = CPUreg.reg[rs]; return 0; // lui
-        case 0x14: CPUreg.reg[rs] = CPUreg.reg[rt] ^ IMM; return_val = CPUreg.reg[rs]; return 0;// xori
+        case 0x0E: CPUreg.reg[rs] = CPUreg.reg[rt] ^ IMM; return_val = CPUreg.reg[rs]; return 0;// xori
         case 0x23: CPUreg.reg[rs] = mem.load_word(IMM + CPUreg.reg[rt]); return_val = CPUreg.reg[rt];return 0; // lw
         case 0x24: CPUreg.reg[rs] = (unsigned)(mem.load_byte(IMM + CPUreg.reg[rt])); return_val = CPUreg.reg[rs];return 0; // lbu
         case 0x25: CPUreg.reg[rs] = (unsigned)(mem.load_hword(IMM + CPUreg.reg[rt])); return_val = CPUreg.reg[rs];return 0; // lhu
