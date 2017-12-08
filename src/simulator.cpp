@@ -229,10 +229,10 @@ int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction, u
             case 0x27    : CPUreg.reg[rd] = ~(CPUreg.reg[rs] | CPUreg.reg[rt]);return_val = CPUreg.reg[rd];return 0; // nor
             case 0x2a    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return_val = CPUreg.reg[rs];return 0; // slt
             case 0x2b    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return_val = CPUreg.reg[rs];return 0; // sltu
-            case 0x00    : CPUreg.reg[rd] = CPUreg.reg[rt]<<shift_size; return_val = CPUreg.reg[rd];return 0;// sll
-            case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rt]<<(CPUreg.reg[rs]&0x3F); return_val = CPUreg.reg[rd];return 0; // sllv
+            case 0x00    : CPUreg.reg[rd] = CPUreg.reg[rt]<<shift_size; return_val = CPUreg.reg[rd]; std::cout<<return_val<<std::endl; return 0;// sll
+            case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rt]<<(CPUreg.reg[rs]); return_val = CPUreg.reg[rd];return 0; // sllv
             case 0x02    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; return_val = CPUreg.reg[rd];return 0; // srl
-            case 0x06    : CPUreg.reg[rd] = CPUreg.reg[rt]>>(CPUreg.reg[rs]&0x3F); return_val = CPUreg.reg[rd];return 0; // srlv
+            case 0x06    : CPUreg.reg[rd] = CPUreg.reg[rt]>>(CPUreg.reg[rs]); return_val = CPUreg.reg[rd];return 0; // srlv
             case 0x03    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], shift_size); return_val = CPUreg.reg[rd];return 0; // sra
             case 0x07    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], CPUreg.reg[rs]&0x3F); return_val = CPUreg.reg[rd];return 0;// srav
             case 0x11    : CPUreg.hi = CPUreg.reg[rd]; // mthi
