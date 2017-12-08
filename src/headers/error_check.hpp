@@ -57,20 +57,6 @@ bool addition_exception(uint32_t op1, uint32_t op2) // Error code -10
     return false;
 }
 
-bool addition_exception(uint32_t op1, uint32_t op2, uint32_t op3) // Error code -10
-{
-    try 
-    {
-        op1 = op1 + op2 + op3;
-    }
-    
-    catch (const std::overflow_error &a)
-    {
-        return true;
-    }
-    return false;
-}
-
 
 bool subtraction_exception(uint32_t op1, uint32_t op2)
 {

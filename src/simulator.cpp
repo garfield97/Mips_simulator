@@ -6,6 +6,7 @@
 #include "headers/error_check.hpp"
 #include <cinttypes>
 #include <exception>
+#include <bitset>
 
 //Error code -10 = 1
 //-11 = 2
@@ -77,6 +78,7 @@ int read_file(memory &mem, std::fstream &infile)
             if (count > (0x4400000<<2)) exit(3);
             if (infile.eof()) return 0;
         }
+
         mem.store_instruction(count, t);
         t = 0;
         count += 4;
@@ -111,30 +113,30 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
     uint32_t IMM = instruction & 0XFFFF;
     const unsigned short opcode = instruction >> 26;
 
-    IMM = IMM<<2;
+    //IMM = sign_extend(IMM);
 
     switch (opcode)
     {
-        case 0x04: if (mem_range_error(PC.get_PC()+4+(IMM))) {exit(2);} if (CPUreg.reg[rs] == CPUreg.reg[rt]) {PC.load_PC(PC.get_PC()+4+(IMM), true);} return 0; // beq
-        case 0x05: if (mem_range_error(PC.get_PC()+4+(IMM))) {exit(2);} if (CPUreg.reg[rs] != CPUreg.reg[rt]) {PC.load_PC(PC.get_PC()+4+(IMM), true);} return 0; // bne
-        case 0x01: if (mem_range_error(PC.get_PC()+4+(IMM))) {exit(2);} 
-                    if (CPUreg.reg[rt] == 0x1) {if (CPUreg.reg[rs] >= 0) PC.load_PC(PC.get_PC()+4+(IMM), true); return 0;} //bgez
-                    else if (CPUreg.reg[rt] == 0b10001) {if (CPUreg.reg[rs] >= 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(PC.get_PC()+4+(IMM), true);} {return 10;}return 0;} //bgezal
-                    else if (CPUreg.reg[rt] == 0x0) {if (CPUreg.reg[rs] < 0) {PC.load_PC(PC.get_PC()+4+(IMM), true);} return 0;} //bltz
-                    else if (CPUreg.reg[rt] == 0x10) {if (CPUreg.reg[rs] < 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(PC.get_PC()+4+(IMM), true);} return 0;} //bltzal
+        case 0x04: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} if (CPUreg.reg[rs] == CPUreg.reg[rt]) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // beq
+        case 0x05: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} if (CPUreg.reg[rs] != CPUreg.reg[rt]) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // bne
+        case 0x01: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} 
+                    if (CPUreg.reg[rt] == 0x1) {if (CPUreg.reg[rs] >= 0) PC.load_PC(PC.get_PC()+4+(IMM<<2), true); return 0;} //bgez
+                    else if (CPUreg.reg[rt] == 0b10001) {if (CPUreg.reg[rs] >= 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} {return 10;}return 0;} //bgezal
+                    else if (CPUreg.reg[rt] == 0x0) {if (CPUreg.reg[rs] < 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0;} //bltz
+                    else if (CPUreg.reg[rt] == 0x10) {if (CPUreg.reg[rs] < 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0;} //bltzal
                     exit(3);
-        case 0x07: if (mem_range_error(PC.get_PC()+4+(IMM))) {exit(2);}
-                    if (CPUreg.reg[rs] > 0) {PC.load_PC(PC.get_PC()+4+(IMM), true);} return 0; // bgtz
-        case 0x06: if (mem_range_error(PC.get_PC()+4+(IMM))) {exit(2);} 
-                    if (CPUreg.reg[rs] <= 0) {PC.load_PC(PC.get_PC()+4+(IMM), true);} return 0; // blez
-        case 0x08: if (addition_exception(CPUreg.reg[rt], IMM, CPUreg.reg[rs])) {exit(1);} CPUreg.reg[rt] = CPUreg.reg[rs] + IMM; return_val = CPUreg.reg[rt]; return 0; //addi
+        case 0x07: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);}
+                    if (CPUreg.reg[rs] > 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // bgtz
+        case 0x06: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} 
+                    if (CPUreg.reg[rs] <= 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // blez
+        case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {exit(1);} CPUreg.reg[rt] = CPUreg.reg[rs] + IMM; return_val = CPUreg.reg[rt]; return 0; //addi
         case 0x09: CPUreg.reg[rt] = (CPUreg.reg[rs]) + IMM; return_val = CPUreg.reg[rt];return 0; // addiu
         case 0x0A: if (CPUreg.reg[rs] < IMM) CPUreg.reg[rt] = 1; else CPUreg.reg[rt] = 0; return 0; // slti
         case 0x0B: if ((unsigned)CPUreg.reg[rs] < (unsigned)(IMM)) CPUreg.reg[rt] = 1;else CPUreg.reg[rt] = 0;return 0; // sltiu
         case 0x0C: CPUreg.reg[rs] = CPUreg.reg[rt] & IMM; return_val = CPUreg.reg[rs];return 0; // andi
         case 0x0D: CPUreg.reg[rs] = CPUreg.reg[rt] | IMM; return_val = CPUreg.reg[rs];return 0; // ori
         case 0x0F: CPUreg.reg[rs] = (IMM << 16); return_val = CPUreg.reg[rs]; return 0; // lui
-        case 0x0E: CPUreg.reg[rs] = CPUreg.reg[rt] ^ IMM; return_val = CPUreg.reg[rs]; return 0;// xori
+        case 0x14: CPUreg.reg[rs] = CPUreg.reg[rt] ^ IMM; return_val = CPUreg.reg[rs]; return 0;// xori
         case 0x23: CPUreg.reg[rs] = mem.load_word(IMM + CPUreg.reg[rt]); return_val = CPUreg.reg[rt];return 0; // lw
         case 0x24: CPUreg.reg[rs] = (unsigned)(mem.load_byte(IMM + CPUreg.reg[rt])); return_val = CPUreg.reg[rs];return 0; // lbu
         case 0x25: CPUreg.reg[rs] = (unsigned)(mem.load_hword(IMM + CPUreg.reg[rt])); return_val = CPUreg.reg[rs];return 0; // lhu
@@ -205,7 +207,7 @@ int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction, u
 
     switch (funct)
     {
-    		case 0x20    : if (addition_exception(CPUreg.reg[rs], CPUreg.reg[rt])) {return 1;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0;//add
+    		case 0x20    : if (addition_exception(rs, rt)) {return 1;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0;//add
             case 0x21    : CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] + (unsigned)CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0;// addu
             case 0x22    : if (subtraction_exception(CPUreg.reg[rs], CPUreg.reg[rt])) {exit (1);} CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0; // sub
             case 0x23    : if (subtraction_exception(CPUreg.reg[rs], CPUreg.reg[rt])) {exit (1);} CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] - (unsigned)CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0; // subu
