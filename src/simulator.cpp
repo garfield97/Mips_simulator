@@ -14,12 +14,12 @@
 //-20 = 4
 
 
-int mother(memory &mem, registers &CPUreg, program_counter &PC);
+int mother(memory &mem, registers &CPUreg, program_counter &PC, uint32_t &return_val);
 int read_file(memory &mem, std::fstream &infile);
-int decode(memory &mem, registers &CPUreg,program_counter &PC, const  uint32_t instruction);
-int i_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
+int decode(memory &mem, registers &CPUreg,program_counter &PC, const  uint32_t instruction, uint32_t &return_val);
+int i_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction, uint32_t &return_val);
 int j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t instruction);
-int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction);
+int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction, uint32_t &return_val);
 uint32_t arithmetic_shift_right(uint32_t input,uint32_t shift_size);
 
 
@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
     program_counter PC;
     int result = 0; // Stores result of execution
     std::string tmp;
+    uint32_t return_val;
 
     std::string filename = argv[1];
 
@@ -45,7 +46,7 @@ int main(int argc, char *argv[])
 
     while (result == 0)
     {
-        result = mother(mem, CPUreg, PC);
+        result = mother(mem, CPUreg, PC, return_val);
         CPUreg.reg[0] = 0;
         PC.increment();
     }
@@ -54,11 +55,11 @@ int main(int argc, char *argv[])
 }
 
 
-int mother(memory &mem, registers &CPUreg, program_counter &PC)
+int mother(memory &mem, registers &CPUreg, program_counter &PC, uint32_t &return_val)
 {
     uint32_t instruction = mem.get_instruction(PC.get_PC()); // Retrieve instruction from memory
 
-    return (decode(mem, CPUreg, PC, instruction)); // Decode and execute
+    return (decode(mem, CPUreg, PC, instruction, return_val)); // Decode and execute
 }
 
 
@@ -87,7 +88,7 @@ int read_file(memory &mem, std::fstream &infile)
 }
 
 
-int decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_t instruction)
+int decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_t instruction, uint32_t &return_val)
 {
     uint32_t opcode = instruction >> 26;
 
@@ -95,15 +96,15 @@ int decode(memory &mem, registers &CPUreg,program_counter &PC, const uint32_t in
 
     switch (opcode)
     {
-        case 0b000000: return (r_type(CPUreg, PC, instruction)); // R - Type
+        case 0b000000: return (r_type(CPUreg, PC, instruction, return_val)); // R - Type
         case 0b000010: return (j_type(mem, CPUreg, PC, instruction)); // J - Type
         case 0b000011: return (j_type(mem, CPUreg, PC, instruction)); // J - Type
-        default: return (i_type(mem, CPUreg, PC, instruction)); // I - Type
+        default: return (i_type(mem, CPUreg, PC, instruction, return_val)); // I - Type
     }
 }
 
 
-int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction)
+int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned int instruction, uint32_t &return_val)
 {
     try
     {
@@ -128,24 +129,24 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
                     if (CPUreg.reg[rs] > 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // bgtz
         case 0x06: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} 
                     if (CPUreg.reg[rs] <= 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // blez
-        case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {exit(1);} CPUreg.reg[rs] = CPUreg.reg[rt] + IMM; return 0; //addi
-        case 0x09: CPUreg.reg[rs] = (unsigned)(CPUreg.reg[rt]) + (unsigned)(IMM); return 0; // addiu
-        case 0x0A: if (CPUreg.reg[rs] < IMM) CPUreg.reg[rt] = 1; return 0; // slti
-        case 0x0B: if ((unsigned)CPUreg.reg[rs] < (unsigned)(IMM)) CPUreg.reg[rt] = 1; return 0; // sltiu
-        case 0x0C: CPUreg.reg[rs] = CPUreg.reg[rt] & IMM; return 0; // andi
-        case 0x0D: CPUreg.reg[rs] = CPUreg.reg[rt] | IMM; return 0; // ori
-        case 0x0F: mem.store_word(CPUreg.reg[rt], (IMM << 16)); return 0; // lui
-        case 0x14: CPUreg.reg[rt] = CPUreg.reg[rs] ^ IMM; // xori
-        case 0x23: CPUreg.reg[rt] = mem.load_word(IMM + CPUreg.reg[rs]); return 0; // lw
-        case 0x24: CPUreg.reg[rt] = (unsigned)(mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lbu
-        case 0x25: CPUreg.reg[rt] = (unsigned)(mem.load_hword(IMM + CPUreg.reg[rs])); return 0; // lhu
+        case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {exit(1);} CPUreg.reg[rs] = CPUreg.reg[rt] + IMM; return_val = CPUreg.reg[rs]; return 0; //addi
+        case 0x09: CPUreg.reg[rs] = (unsigned)(CPUreg.reg[rt]) + (unsigned)(IMM); return_val = CPUreg.reg[rs];return 0; // addiu
+        case 0x0A: if (CPUreg.reg[rs] < IMM) CPUreg.reg[rt] = 1; return_val = CPUreg.reg[rs];return 0; // slti
+        case 0x0B: if ((unsigned)CPUreg.reg[rs] < (unsigned)(IMM)) CPUreg.reg[rt] = 1; return_val = CPUreg.reg[rs];return 0; // sltiu
+        case 0x0C: CPUreg.reg[rs] = CPUreg.reg[rt] & IMM; return_val = CPUreg.reg[rs];return 0; // andi
+        case 0x0D: CPUreg.reg[rs] = CPUreg.reg[rt] | IMM; return_val = CPUreg.reg[rs];return 0; // ori
+        case 0x0F: mem.store_word(CPUreg.reg[rt], (IMM << 16)); return 0; // lui ////////////
+        case 0x14: CPUreg.reg[rt] = CPUreg.reg[rs] ^ IMM; return_val = CPUreg.reg[rt]; return 0;// xori
+        case 0x23: CPUreg.reg[rt] = mem.load_word(IMM + CPUreg.reg[rs]); return_val = CPUreg.reg[rt];return 0; // lw
+        case 0x24: CPUreg.reg[rt] = (unsigned)(mem.load_byte(IMM + CPUreg.reg[rs])); return_val = CPUreg.reg[rt];return 0; // lbu
+        case 0x25: CPUreg.reg[rt] = (unsigned)(mem.load_hword(IMM + CPUreg.reg[rs])); return_val = CPUreg.reg[rt];return 0; // lhu
         case 0x28: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} if (write_check(IMM + CPUreg.reg[rs])) {exit(3);} mem.store_byte(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sb
         case 0x29: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} if (write_check(IMM + CPUreg.reg[rs])) {exit(3);} mem.store_hword(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sh
         case 0x43: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} if (write_check(IMM + CPUreg.reg[rs])) {exit(3);} mem.store_word(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
-        case 0x22: CPUreg.reg[rt] = mem.load_word_left(IMM + CPUreg.reg[rs]); return 0;// lwl
-        case 0x26: CPUreg.reg[rt] = mem.load_word_right(IMM + CPUreg.reg[rs]); return 0;// lwr
-        case 0x20: CPUreg.reg[rt] = (mem.load_byte(IMM + CPUreg.reg[rs])); return 0; // lb
-        case 0x21: CPUreg.reg[rt] = (mem.load_hword(IMM + CPUreg.reg[rs])); return 0; // lh
+        case 0x22: CPUreg.reg[rt] = mem.load_word_left(IMM + CPUreg.reg[rs]); return_val = CPUreg.reg[rt];return 0;// lwl
+        case 0x26: CPUreg.reg[rt] = mem.load_word_right(IMM + CPUreg.reg[rs]); return_val = CPUreg.reg[rt];return 0;// lwr
+        case 0x20: CPUreg.reg[rt] = (mem.load_byte(IMM + CPUreg.reg[rs])); return_val = CPUreg.reg[rt];return 0; // lb
+        case 0x21: CPUreg.reg[rt] = (mem.load_hword(IMM + CPUreg.reg[rs])); return_val = CPUreg.reg[rt];return 0; // lh
         default: exit(3);
     }
     }
@@ -192,7 +193,7 @@ int j_type(memory &mem, registers &CPUreg, program_counter &PC, const uint32_t i
 }
 
 
-int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction)
+int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction, uint32_t &return_val)
 {
     try {
     const unsigned short rs = (instruction >> 21) & 0b11111;
@@ -206,10 +207,10 @@ int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction)
 
     switch (funct)
     {
-    		case 0x20    : if (addition_exception(rs, rt)) {return 1;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; return 0;//add
-            case 0x21    : CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] + (unsigned)CPUreg.reg[rt]; return 0;// addu
-            case 0x22    : if (subtraction_exception(CPUreg.reg[rs], CPUreg.reg[rt])) {exit (1);} CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; return 0; // sub
-            case 0x23    : if (subtraction_exception(CPUreg.reg[rs], CPUreg.reg[rt])) {exit (1);} CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] - (unsigned)CPUreg.reg[rt]; return 0; // subu
+    		case 0x20    : if (addition_exception(rs, rt)) {return 1;} CPUreg.reg[rd] = CPUreg.reg[rs] + CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0;//add
+            case 0x21    : CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] + (unsigned)CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0;// addu
+            case 0x22    : if (subtraction_exception(CPUreg.reg[rs], CPUreg.reg[rt])) {exit (1);} CPUreg.reg[rd] = CPUreg.reg[rs] - CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0; // sub
+            case 0x23    : if (subtraction_exception(CPUreg.reg[rs], CPUreg.reg[rt])) {exit (1);} CPUreg.reg[rd] = (unsigned)CPUreg.reg[rs] - (unsigned)CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0; // subu
             case 0x18    : temp=(CPUreg.reg[rs]*CPUreg.reg[rt]);// mult
                            CPUreg.hi=(temp>>32);
                            CPUreg.lo=(temp & 0xFFFF); return 0;
@@ -220,20 +221,20 @@ int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction)
                             else {CPUreg.hi = CPUreg.reg[rs] % CPUreg.reg[rt]; CPUreg.lo = CPUreg.reg[rs]/CPUreg.reg[rt]; } return 0;
             case 0x1b    : if(division_error(rs, rt)) {CPUreg.reg[rd] = 1;} // divu
                             else {CPUreg.hi = (unsigned)CPUreg.reg[rs] % (unsigned)CPUreg.reg[rt]; CPUreg.lo = (unsigned)CPUreg.reg[rs]/(unsigned)CPUreg.reg[rt]; } return 0;
-            case 0x10    : CPUreg.reg[rd]=CPUreg.hi; return 0;// mfhi
-            case 0x12    : CPUreg.reg[rd]=CPUreg.lo; return 0;// mflo
-            case 0x24    : CPUreg.reg[rd] = CPUreg.reg[rs] & CPUreg.reg[rt]; return 0;// and
-            case 0x25    : CPUreg.reg[rd] = CPUreg.reg[rs] | CPUreg.reg[rt]; return 0;// or
-            case 0x26    : CPUreg.reg[rd] = CPUreg.reg[rs] ^ CPUreg.reg[rt]; return 0;// xor
-            case 0x27    : CPUreg.reg[rd] = ~(CPUreg.reg[rs] | CPUreg.reg[rt]);return 0; // nor
+            case 0x10    : CPUreg.reg[rd]=CPUreg.hi; return_val = CPUreg.reg[rd];return 0;// mfhi
+            case 0x12    : CPUreg.reg[rd]=CPUreg.lo; return_val = CPUreg.reg[rd];return 0;// mflo
+            case 0x24    : CPUreg.reg[rd] = CPUreg.reg[rs] & CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0;// and
+            case 0x25    : CPUreg.reg[rd] = CPUreg.reg[rs] | CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0;// or
+            case 0x26    : CPUreg.reg[rd] = CPUreg.reg[rs] ^ CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0;// xor
+            case 0x27    : CPUreg.reg[rd] = ~(CPUreg.reg[rs] | CPUreg.reg[rt]);return_val = CPUreg.reg[rd];return 0; // nor
             case 0x2a    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return 0; // slt
             case 0x2b    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return 0; // sltu
-            case 0x00    : CPUreg.reg[rd] = CPUreg.reg[rt]<<shift_size; return 0;// sll
-            case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rt]<<(CPUreg.reg[rs]&0x3F); return 0; // sllv
-            case 0x02    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; return 0; // srl
-            case 0x06    : CPUreg.reg[rd] = CPUreg.reg[rt]>>(CPUreg.reg[rs]&0x3F); return 0; // srlv
-            case 0x03    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], shift_size); return 0; // sra
-            case 0x07    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], CPUreg.reg[rs]&0x3F); return 0;// srav
+            case 0x00    : CPUreg.reg[rd] = CPUreg.reg[rt]<<shift_size; return_val = CPUreg.reg[rd];return 0;// sll
+            case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rt]<<(CPUreg.reg[rs]&0x3F); return_val = CPUreg.reg[rd];return 0; // sllv
+            case 0x02    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; return_val = CPUreg.reg[rd];return 0; // srl
+            case 0x06    : CPUreg.reg[rd] = CPUreg.reg[rt]>>(CPUreg.reg[rs]&0x3F); return_val = CPUreg.reg[rd];return 0; // srlv
+            case 0x03    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], shift_size); return_val = CPUreg.reg[rd];return 0; // sra
+            case 0x07    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], CPUreg.reg[rs]&0x3F); return_val = CPUreg.reg[rd];return 0;// srav
             case 0x11    : CPUreg.hi = CPUreg.reg[rd]; // mthi
             case 0x13    : CPUreg.lo = CPUreg.reg[rd]; // mtlo
             case 0x08    : if (access_zero(CPUreg.reg[rs]) == true) {return 10;} if (invalid_instruction(CPUreg.reg[rs])) {exit (3);} PC.load_PC(CPUreg.reg[rs], true);if (access_zero(CPUreg.reg[rs]) == true) {return 10;} return 0; //jr
