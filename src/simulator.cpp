@@ -122,7 +122,7 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
         case 0x01: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} 
                     if (CPUreg.reg[rt] == 0x1) {if (CPUreg.reg[rs] >= 0) PC.load_PC(PC.get_PC()+4+(IMM<<2), true); return 0;} //bgez
                     else if (CPUreg.reg[rt] == 0b10001) {if (CPUreg.reg[rs] >= 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} {return 10;}return 0;} //bgezal
-                    else if (CPUreg.reg[rt] == 0x0) {if (CPUreg.reg[rs] < 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0;} //bltz
+                    else if (CPUreg.reg[rt] == 0x0) {if (CPUreg.reg[rs] < 0) {PC.load_PC(PC.get_PC()+4+(IMM), true);} return 0;} //bltz
                     else if (CPUreg.reg[rt] == 0x10) {if (CPUreg.reg[rs] < 0) {CPUreg.reg[31] = PC.get_PC(); PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0;} //bltzal
                     exit(3);
         case 0x07: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);}
