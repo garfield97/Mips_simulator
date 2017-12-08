@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
         CPUreg.reg[0] = 0;
         PC.increment();
     }
-    std::cout<<return_val<<std::endl;
+
     return return_val;//Return output
 }
 
@@ -140,9 +140,9 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
         case 0x23: CPUreg.reg[rs] = mem.load_word(IMM + CPUreg.reg[rt]); return_val = CPUreg.reg[rt];return 0; // lw
         case 0x24: CPUreg.reg[rs] = (unsigned)(mem.load_byte(IMM + CPUreg.reg[rt])); return_val = CPUreg.reg[rs];return 0; // lbu
         case 0x25: CPUreg.reg[rs] = (unsigned)(mem.load_hword(IMM + CPUreg.reg[rt])); return_val = CPUreg.reg[rs];return 0; // lhu
-        case 0x28: if (write_to_zero(IMM + CPUreg.reg[rt])) {return 10;} if (write_check(IMM + CPUreg.reg[rt])) {exit(3);} mem.store_byte(IMM + CPUreg.reg[rt], CPUreg.reg[rs]); return 0; // sb
-        case 0x29: if (write_to_zero(IMM + CPUreg.reg[rt])) {return 10;} if (write_check(IMM + CPUreg.reg[rt])) {exit(3);} mem.store_hword(IMM + CPUreg.reg[rt], CPUreg.reg[rs]); return 0; // sh
-        case 0x43: if (write_to_zero(IMM + CPUreg.reg[rt])) {return 10;} if (write_check(IMM + CPUreg.reg[rt])) {exit(3);} mem.store_word(IMM + CPUreg.reg[rt], CPUreg.reg[rs]); return 0; // sw
+        case 0x28: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} if (write_check(IMM + CPUreg.reg[rs])) {exit(3);} mem.store_byte(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sb
+        case 0x29: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} if (write_check(IMM + CPUreg.reg[rs])) {exit(3);} mem.store_hword(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sh
+        case 0x2B: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} if (write_check(IMM + CPUreg.reg[rs])) {exit(3);} mem.store_word(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
         case 0x22: CPUreg.reg[rs] = mem.load_word_left(IMM + CPUreg.reg[rt]); return_val = CPUreg.reg[rs];return 0;// lwl
         case 0x26: CPUreg.reg[rs] = mem.load_word_right(IMM + CPUreg.reg[rt]); return_val = CPUreg.reg[rs];return 0;// lwr
         case 0x20: CPUreg.reg[rs] = (mem.load_byte(IMM + CPUreg.reg[rt])); return_val = CPUreg.reg[rs];return 0; // lb
@@ -231,7 +231,7 @@ int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction, u
             case 0x2b    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return 0; // sltu
             case 0x00    : CPUreg.reg[rd] = CPUreg.reg[rt]<<shift_size; return_val = CPUreg.reg[rd]; return 0;// sll
             case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rt]<<(CPUreg.reg[rs]); return_val = CPUreg.reg[rd]; return 0; // sllv
-            case 0x02    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; return_val = CPUreg.reg[rd];return 0; // srl
+            case 0x02    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; return_val = CPUreg.reg[rd]; return 0; // srl
             case 0x06    : CPUreg.reg[rd] = CPUreg.reg[rt]>>(CPUreg.reg[rs]); return_val = CPUreg.reg[rd];return 0; // srlv
             case 0x03    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], shift_size); return_val = CPUreg.reg[rd];return 0; // sra
             case 0x07    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], CPUreg.reg[rs]); return_val = CPUreg.reg[rd];return 0;// srav
