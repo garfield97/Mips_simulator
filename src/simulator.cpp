@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
         CPUreg.reg[0] = 0;
         PC.increment();
     }
-
+    std::cout<<return_val<<std::endl;
     return return_val;//Return output
 }
 
@@ -130,7 +130,7 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
         case 0x06: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} 
                     if (CPUreg.reg[rs] <= 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // blez
         case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {exit(1);} CPUreg.reg[rs] = CPUreg.reg[rt] + IMM; return_val = CPUreg.reg[rs]; return 0; //addi
-        case 0x09: CPUreg.reg[rs] = (unsigned)(CPUreg.reg[rt]) + (unsigned)(IMM); return_val = CPUreg.reg[rs];return 0; // addiu
+        case 0x09: CPUreg.reg[rs] = (CPUreg.reg[rt]) + IMM; return_val = CPUreg.reg[rs];return 0; // addiu
         case 0x0A: if (CPUreg.reg[rs] < IMM) CPUreg.reg[rt] = 1; return_val = CPUreg.reg[rs];return 0; // slti
         case 0x0B: if ((unsigned)CPUreg.reg[rs] < (unsigned)(IMM)) CPUreg.reg[rt] = 1; return_val = CPUreg.reg[rs];return 0; // sltiu
         case 0x0C: CPUreg.reg[rs] = CPUreg.reg[rt] & IMM; return_val = CPUreg.reg[rs];return 0; // andi
@@ -227,8 +227,8 @@ int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction, u
             case 0x25    : CPUreg.reg[rd] = CPUreg.reg[rs] | CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0;// or
             case 0x26    : CPUreg.reg[rd] = CPUreg.reg[rs] ^ CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0;// xor
             case 0x27    : CPUreg.reg[rd] = ~(CPUreg.reg[rs] | CPUreg.reg[rt]);return_val = CPUreg.reg[rd];return 0; // nor
-            case 0x2a    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return 0; // slt
-            case 0x2b    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return 0; // sltu
+            case 0x2a    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return_val = CPUreg.reg[rs];return 0; // slt
+            case 0x2b    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return_val = CPUreg.reg[rs];return 0; // sltu
             case 0x00    : CPUreg.reg[rd] = CPUreg.reg[rt]<<shift_size; return_val = CPUreg.reg[rd];return 0;// sll
             case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rt]<<(CPUreg.reg[rs]&0x3F); return_val = CPUreg.reg[rd];return 0; // sllv
             case 0x02    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; return_val = CPUreg.reg[rd];return 0; // srl

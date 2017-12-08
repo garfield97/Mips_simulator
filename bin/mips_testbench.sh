@@ -25,6 +25,7 @@ do
 	command="$1 $file_loc"
 	$command temp.txt #Run test binary in simulator
 	result=$? #Retrieve return value of simulator
+	echo $result
 
 	case $result in
 	10) #Passed
