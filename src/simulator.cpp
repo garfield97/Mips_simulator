@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
         PC.increment();
     }
 
-    return CPUreg.reg[3];//Return output
+    return return_val;//Return output
 }
 
 
@@ -135,7 +135,7 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
         case 0x0B: if ((unsigned)CPUreg.reg[rs] < (unsigned)(IMM)) CPUreg.reg[rt] = 1; return_val = CPUreg.reg[rs];return 0; // sltiu
         case 0x0C: CPUreg.reg[rs] = CPUreg.reg[rt] & IMM; return_val = CPUreg.reg[rs];return 0; // andi
         case 0x0D: CPUreg.reg[rs] = CPUreg.reg[rt] | IMM; return_val = CPUreg.reg[rs];return 0; // ori
-        case 0x0F: mem.store_word(CPUreg.reg[rt], (IMM << 16)); return 0; // lui ////////////
+        case 0x0F: CPUreg.reg[rt] = (IMM << 16); return_val = CPUreg.reg[rt]; return 0; // lui
         case 0x14: CPUreg.reg[rt] = CPUreg.reg[rs] ^ IMM; return_val = CPUreg.reg[rt]; return 0;// xori
         case 0x23: CPUreg.reg[rt] = mem.load_word(IMM + CPUreg.reg[rs]); return_val = CPUreg.reg[rt];return 0; // lw
         case 0x24: CPUreg.reg[rt] = (unsigned)(mem.load_byte(IMM + CPUreg.reg[rs])); return_val = CPUreg.reg[rt];return 0; // lbu
