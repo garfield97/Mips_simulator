@@ -2,7 +2,7 @@
 
 tmp=tmp.txt
 
-file_names='j jal srav sra srlv srl sllv sll add addu and div nor divu mult multu or slt sltu addi addi_max addiu andi lw ori xori corner arithmetic_overflow invalid_instruction jr beq bgez bgezal bgtz blez bltz bltzal' #Names of all non arithmetic filenames
+file_names='j jal srav sra srlv srl sllv sll add addu and div nor divu mult multu or slt sltu addi addi_max addiu andi lw ori xori corner invalid_instruction jr beq bgez bgezal bgtz blez bltz bltzal' #Names of all non arithmetic filenames
 
 passed=pass #Pass variable
 
@@ -26,7 +26,7 @@ do
 	command="$1 $file_loc"
 	$command temp.txt #Run test binary in simulator
 	result=$? #Retrieve return value of simulator
-	echo $result
+	
 	case $result in
 	10) #Passed
 		type=-1
