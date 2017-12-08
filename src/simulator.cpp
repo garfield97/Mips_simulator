@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
     infile.open(filename.c_str(), std::ios::binary | std::ios::in);
 
-    if (!infile.is_open()) {std::cout<<"Invalid filename"<<std::endl; exit(4);}
+    if (!infile.is_open()) {exit(4);}
 
     if (read_file(mem, infile) == 3) exit(3); //If 3 then binary too large to store in instruction memory
 
@@ -129,24 +129,24 @@ int i_type(memory &mem, registers &CPUreg, program_counter &PC, const unsigned i
                     if (CPUreg.reg[rs] > 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // bgtz
         case 0x06: if (mem_range_error(PC.get_PC()+4+(IMM<<2))) {exit(2);} 
                     if (CPUreg.reg[rs] <= 0) {PC.load_PC(PC.get_PC()+4+(IMM<<2), true);} return 0; // blez
-        case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {exit(1);} CPUreg.reg[rs] = CPUreg.reg[rt] + IMM; return_val = CPUreg.reg[rs]; return 0; //addi
-        case 0x09: CPUreg.reg[rs] = (CPUreg.reg[rt]) + IMM; return_val = CPUreg.reg[rs];return 0; // addiu
-        case 0x0A: if (CPUreg.reg[rs] < IMM) CPUreg.reg[rt] = 1; return_val = CPUreg.reg[rs];return 0; // slti
-        case 0x0B: if ((unsigned)CPUreg.reg[rs] < (unsigned)(IMM)) CPUreg.reg[rt] = 1; return_val = CPUreg.reg[rs];return 0; // sltiu
+        case 0x08: if (addition_exception(CPUreg.reg[rs], IMM)) {exit(1);} CPUreg.reg[rt] = CPUreg.reg[rs] + IMM; return_val = CPUreg.reg[rt]; return 0; //addi
+        case 0x09: CPUreg.reg[rt] = (CPUreg.reg[rs]) + IMM; return_val = CPUreg.reg[rt];return 0; // addiu
+        case 0x0A: if (CPUreg.reg[rs] < IMM) CPUreg.reg[rt] = 1; else CPUreg.reg[rt] = 0; return 0; // slti
+        case 0x0B: if ((unsigned)CPUreg.reg[rs] < (unsigned)(IMM)) CPUreg.reg[rt] = 1;else CPUreg.reg[rt] = 0;return 0; // sltiu
         case 0x0C: CPUreg.reg[rs] = CPUreg.reg[rt] & IMM; return_val = CPUreg.reg[rs];return 0; // andi
         case 0x0D: CPUreg.reg[rs] = CPUreg.reg[rt] | IMM; return_val = CPUreg.reg[rs];return 0; // ori
-        case 0x0F: CPUreg.reg[rt] = (IMM << 16); return_val = CPUreg.reg[rt]; return 0; // lui
-        case 0x14: CPUreg.reg[rt] = CPUreg.reg[rs] ^ IMM; return_val = CPUreg.reg[rt]; return 0;// xori
-        case 0x23: CPUreg.reg[rt] = mem.load_word(IMM + CPUreg.reg[rs]); return_val = CPUreg.reg[rt];return 0; // lw
-        case 0x24: CPUreg.reg[rt] = (unsigned)(mem.load_byte(IMM + CPUreg.reg[rs])); return_val = CPUreg.reg[rt];return 0; // lbu
-        case 0x25: CPUreg.reg[rt] = (unsigned)(mem.load_hword(IMM + CPUreg.reg[rs])); return_val = CPUreg.reg[rt];return 0; // lhu
-        case 0x28: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} if (write_check(IMM + CPUreg.reg[rs])) {exit(3);} mem.store_byte(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sb
-        case 0x29: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} if (write_check(IMM + CPUreg.reg[rs])) {exit(3);} mem.store_hword(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sh
-        case 0x43: if (write_to_zero(IMM + CPUreg.reg[rs])) {return 10;} if (write_check(IMM + CPUreg.reg[rs])) {exit(3);} mem.store_word(IMM + CPUreg.reg[rs], CPUreg.reg[rt]); return 0; // sw
-        case 0x22: CPUreg.reg[rt] = mem.load_word_left(IMM + CPUreg.reg[rs]); return_val = CPUreg.reg[rt];return 0;// lwl
-        case 0x26: CPUreg.reg[rt] = mem.load_word_right(IMM + CPUreg.reg[rs]); return_val = CPUreg.reg[rt];return 0;// lwr
-        case 0x20: CPUreg.reg[rt] = (mem.load_byte(IMM + CPUreg.reg[rs])); return_val = CPUreg.reg[rt];return 0; // lb
-        case 0x21: CPUreg.reg[rt] = (mem.load_hword(IMM + CPUreg.reg[rs])); return_val = CPUreg.reg[rt];return 0; // lh
+        case 0x0F: CPUreg.reg[rs] = (IMM << 16); return_val = CPUreg.reg[rs]; return 0; // lui
+        case 0x14: CPUreg.reg[rs] = CPUreg.reg[rt] ^ IMM; return_val = CPUreg.reg[rs]; return 0;// xori
+        case 0x23: CPUreg.reg[rs] = mem.load_word(IMM + CPUreg.reg[rt]); return_val = CPUreg.reg[rt];return 0; // lw
+        case 0x24: CPUreg.reg[rs] = (unsigned)(mem.load_byte(IMM + CPUreg.reg[rt])); return_val = CPUreg.reg[rs];return 0; // lbu
+        case 0x25: CPUreg.reg[rs] = (unsigned)(mem.load_hword(IMM + CPUreg.reg[rt])); return_val = CPUreg.reg[rs];return 0; // lhu
+        case 0x28: if (write_to_zero(IMM + CPUreg.reg[rt])) {return 10;} if (write_check(IMM + CPUreg.reg[rt])) {exit(3);} mem.store_byte(IMM + CPUreg.reg[rt], CPUreg.reg[rs]); return 0; // sb
+        case 0x29: if (write_to_zero(IMM + CPUreg.reg[rt])) {return 10;} if (write_check(IMM + CPUreg.reg[rt])) {exit(3);} mem.store_hword(IMM + CPUreg.reg[rt], CPUreg.reg[rs]); return 0; // sh
+        case 0x43: if (write_to_zero(IMM + CPUreg.reg[rt])) {return 10;} if (write_check(IMM + CPUreg.reg[rt])) {exit(3);} mem.store_word(IMM + CPUreg.reg[rt], CPUreg.reg[rs]); return 0; // sw
+        case 0x22: CPUreg.reg[rs] = mem.load_word_left(IMM + CPUreg.reg[rt]); return_val = CPUreg.reg[rs];return 0;// lwl
+        case 0x26: CPUreg.reg[rs] = mem.load_word_right(IMM + CPUreg.reg[rt]); return_val = CPUreg.reg[rs];return 0;// lwr
+        case 0x20: CPUreg.reg[rs] = (mem.load_byte(IMM + CPUreg.reg[rt])); return_val = CPUreg.reg[rs];return 0; // lb
+        case 0x21: CPUreg.reg[rs] = (mem.load_hword(IMM + CPUreg.reg[rt])); return_val = CPUreg.reg[rs];return 0; // lh
         default: exit(3);
     }
     }
@@ -227,14 +227,14 @@ int r_type(registers &CPUreg, program_counter &PC, const uint32_t instruction, u
             case 0x25    : CPUreg.reg[rd] = CPUreg.reg[rs] | CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0;// or
             case 0x26    : CPUreg.reg[rd] = CPUreg.reg[rs] ^ CPUreg.reg[rt]; return_val = CPUreg.reg[rd];return 0;// xor
             case 0x27    : CPUreg.reg[rd] = ~(CPUreg.reg[rs] | CPUreg.reg[rt]);return_val = CPUreg.reg[rd];return 0; // nor
-            case 0x2a    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return_val = CPUreg.reg[rs];return 0; // slt
-            case 0x2b    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return_val = CPUreg.reg[rs];return 0; // sltu
-            case 0x00    : CPUreg.reg[rd] = CPUreg.reg[rt]<<shift_size; return_val = CPUreg.reg[rd]; std::cout<<return_val<<std::endl; return 0;// sll
-            case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rt]<<(CPUreg.reg[rs]); return_val = CPUreg.reg[rd];return 0; // sllv
+            case 0x2a    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return 0; // slt
+            case 0x2b    : if(CPUreg.reg[rt]<CPUreg.reg[rd]) CPUreg.reg[rs]=1; return 0; // sltu
+            case 0x00    : CPUreg.reg[rd] = CPUreg.reg[rt]<<shift_size; return_val = CPUreg.reg[rd]; return 0;// sll
+            case 0x04    : CPUreg.reg[rd] = CPUreg.reg[rt]<<(CPUreg.reg[rs]); return_val = CPUreg.reg[rd]; return 0; // sllv
             case 0x02    : CPUreg.reg[rd] = CPUreg.reg[rt]>>shift_size; return_val = CPUreg.reg[rd];return 0; // srl
             case 0x06    : CPUreg.reg[rd] = CPUreg.reg[rt]>>(CPUreg.reg[rs]); return_val = CPUreg.reg[rd];return 0; // srlv
             case 0x03    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], shift_size); return_val = CPUreg.reg[rd];return 0; // sra
-            case 0x07    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], CPUreg.reg[rs]&0x3F); return_val = CPUreg.reg[rd];return 0;// srav
+            case 0x07    : CPUreg.reg[rd] = arithmetic_shift_right(CPUreg.reg[rt], CPUreg.reg[rs]); return_val = CPUreg.reg[rd];return 0;// srav
             case 0x11    : CPUreg.hi = CPUreg.reg[rd]; // mthi
             case 0x13    : CPUreg.lo = CPUreg.reg[rd]; // mtlo
             case 0x08    : if (access_zero(CPUreg.reg[rs]) == true) {return 10;} if (invalid_instruction(CPUreg.reg[rs])) {exit (3);} PC.load_PC(CPUreg.reg[rs], true);if (access_zero(CPUreg.reg[rs]) == true) {return 10;} return 0; //jr
