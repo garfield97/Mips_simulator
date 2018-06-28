@@ -1,0 +1,17 @@
+add_i_10+10 : 20
+
+add_i_max.txt:255
+
+add_i_unsigned:20
+
+add_i_max:255
+
+
+load_save_lui_test:10 
+
+
+andi_test: 0
+
+ori_test:65535
+
+xori_test:65535
